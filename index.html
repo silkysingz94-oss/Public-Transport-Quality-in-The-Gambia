@@ -7,174 +7,155 @@
 <title>GBoS GEOAI | Public Transport Quality in The Gambia</title>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@turf/turf@7.2.0/turf.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
 
 <style>
-:root{
-  --bg:#08111e;
-  --panel:#101d2e;
-  --panel2:#0b1828;
-  --line:#293e55;
-  --text:#e8f0f8;
-  --muted:#91a5ba;
-  --cyan:#35c6e8;
-  --blue:#4389ed;
-  --orange:#f5a442;
-  --green:#39c58a;
+:root {
+  --bg:#0b1220;
+  --panel:#111c2e;
+  --panel2:#17253a;
+  --border:#263850;
+  --text:#e6edf7;
+  --muted:#93a4ba;
+  --blue:#38a5ff;
+  --cyan:#28d5d0;
+  --green:#38c98c;
+  --orange:#f5a742;
+  --red:#f06464;
 }
 *{box-sizing:border-box}
 body{
-  margin:0;background:var(--bg);color:var(--text);
-  font-family:Arial,Helvetica,sans-serif;font-size:13px
+ margin:0;background:var(--bg);color:var(--text);
+ font-family:Inter,Segoe UI,Arial,sans-serif;font-size:13px;
 }
 header{
-  height:76px;background:#0c192a;border-bottom:1px solid var(--line);
-  display:flex;align-items:center;justify-content:space-between;
-  padding:12px 20px;gap:12px
+ height:auto;min-height:68px;padding:14px 20px;
+ display:flex;justify-content:space-between;align-items:center;
+ gap:12px;border-bottom:1px solid var(--border);
+ background:#101b2c;flex-wrap:wrap;
 }
 .brand{display:flex;align-items:center;gap:12px}
 .logo{
-  width:43px;height:43px;background:#153d54;
-  border:1px solid #2b718d;border-radius:10px;
-  display:grid;place-items:center;color:#6de0f1;
-  font-weight:900;font-size:16px
+ width:40px;height:40px;border-radius:10px;
+ background:linear-gradient(135deg,#1687df,#21c6bb);
+ display:grid;place-items:center;font-size:21px;font-weight:900;
 }
-h1{font-size:18px;margin:0 0 5px}
-.subtitle{font-size:10px;color:var(--muted)}
-.header-right{text-align:right;font-size:10px;color:var(--muted)}
+.brand h1{font-size:17px;margin:0}
+.brand p{margin:4px 0 0;color:var(--muted);font-size:10px;letter-spacing:1px}
+.header-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .status{
-  display:inline-block;margin-top:5px;padding:5px 10px;
-  border:1px solid #35516b;border-radius:20px;color:#a9dce9
+ padding:7px 11px;border:1px solid var(--border);
+ border-radius:6px;color:var(--orange);font-size:10px;
+ letter-spacing:.7px;background:#1a2638;
 }
-main{
-  display:grid;
-  grid-template-columns:minmax(255px,1fr) minmax(420px,1.65fr) minmax(255px,1fr);
-  gap:11px;padding:11px;
-  height:calc(100vh - 110px);min-height:620px
+button,select,input{
+ background:#17263b;color:var(--text);
+ border:1px solid #344962;border-radius:5px;
+ padding:9px;font-size:12px;outline:none;max-width:100%;
+}
+button{cursor:pointer}
+button:hover{border-color:var(--blue);background:#203650}
+button.primary{background:#1269a9;border-color:#1687df}
+button.danger{border-color:#794444;color:#ffaaaa}
+input[type=file]{width:100%;font-size:10px}
+label{display:block;color:#a9b8ca;font-size:10px;margin-bottom:6px}
+small,.muted{color:var(--muted)}
+.layout{
+ display:grid;grid-template-columns:300px minmax(300px,1fr) 310px;
+ gap:10px;padding:10px;height:calc(100vh - 68px);
+ min-height:600px;
 }
 .panel{
-  min-width:0;min-height:0;overflow-y:auto;
-  background:var(--panel);border:1px solid var(--line);
-  border-radius:9px;scrollbar-width:thin;
-  scrollbar-color:#40546b transparent
+ background:var(--panel);border:1px solid var(--border);
+ border-radius:8px;overflow-y:auto;min-height:0;
+ scrollbar-width:thin;scrollbar-color:#344962 transparent;
 }
-.inner{padding:13px}
-.section{
-  border-bottom:1px solid var(--line);
-  padding-bottom:13px;margin-bottom:13px
-}
-.section:last-child{border:0}
+.panel-inner{padding:13px}
+.section{margin-bottom:15px}
 .section-title{
-  color:#65d3e8;font-size:10px;font-weight:800;
-  letter-spacing:1.2px;margin-bottom:10px
+ font-size:10px;letter-spacing:1.1px;color:var(--cyan);
+ font-weight:800;margin-bottom:10px;
 }
-h2{font-size:13px;margin:0 0 9px}
-label{
-  display:block;font-size:10px;color:#b7c8d9;
-  margin:9px 0 5px
-}
-input,select,button{
-  width:100%;padding:9px;border-radius:6px;
-  border:1px solid #354b63;background:#0b1727;
-  color:var(--text);font-size:11px;outline:none
-}
-input[type=file]{padding:7px}
-button{
-  cursor:pointer;background:#16405a;
-  border-color:#2b6881;font-weight:bold
-}
-button:hover{background:#205571}
-button.secondary{background:#1a2b40;border-color:#3b5067}
-button.orange{background:#52381f;border-color:#98642e}
-button:disabled{opacity:.45;cursor:not-allowed}
-.button-row{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px}
-.check{
-  display:flex;align-items:center;gap:8px;
-  font-size:11px;color:#c2d0df;margin:9px 0
-}
-.check input{width:auto;accent-color:var(--cyan)}
+h2{font-size:15px;margin:0 0 9px}
+h3{font-size:12px;margin:0 0 9px}
+.field{margin-bottom:11px}
+.field select,.field input{width:100%}
+.btn-row{display:flex;gap:7px;flex-wrap:wrap}
+.btn-row button{flex:1}
+hr{border:0;border-top:1px solid var(--border);margin:14px 0}
 .note{
-  color:var(--muted);font-size:10px;line-height:1.6;margin-top:7px
+ padding:10px;background:#17273a;border-left:3px solid var(--blue);
+ color:#aabbd0;font-size:11px;line-height:1.6;border-radius:3px;
 }
-.info{
-  background:#0b192a;border:1px solid #2c435c;
-  border-radius:7px;padding:9px;margin-top:8px;
-  font-size:10px;line-height:1.6;color:#bacbdd;
-  overflow-wrap:anywhere
+.warning{border-left-color:var(--orange)}
+.success{border-left-color:var(--green)}
+.error{border-left-color:var(--red)}
+#map-wrap{position:relative;min-width:0;min-height:0;border-radius:8px;overflow:hidden;border:1px solid var(--border)}
+#map{height:100%;width:100%;background:#101b2c}
+.map-tag{
+ position:absolute;z-index:500;top:12px;left:12px;
+ background:#101b2ce8;border:1px solid #40516a;
+ padding:9px 12px;border-radius:6px;pointer-events:none;
 }
-.info.good{border-color:#286d53;color:#a4e1c2}
-.info.warn{border-color:#78572e;color:#f0c990}
-.info.error{border-color:#84464c;color:#f0a6a9}
-#map-wrap{
-  position:relative;min-height:500px;height:100%;
-  border:1px solid var(--line);border-radius:9px;
-  overflow:hidden;background:#dce5ea
+.map-tag strong{display:block;font-size:12px}
+.map-tag span{font-size:10px;color:var(--muted)}
+.map-bottom{
+ position:absolute;bottom:12px;left:12px;z-index:500;
+ background:#101b2ce8;border:1px solid #40516a;
+ padding:8px 12px;border-radius:5px;font-size:10px;
+ pointer-events:none;
 }
-#map{height:100%;width:100%;background:#dce5ea}
-.map-title{
-  position:absolute;z-index:500;top:12px;left:12px;
-  padding:9px 11px;background:#0b1727ed;
-  border:1px solid #3b5269;border-radius:7px;
-  pointer-events:none
-}
-.map-title strong{display:block;font-size:11px;margin-bottom:4px}
-.map-title span{font-size:10px;color:#a8bed0}
-.legend{
-  position:absolute;z-index:500;bottom:18px;left:12px;
-  background:#0b1727ed;border:1px solid #3b5269;
-  border-radius:7px;padding:9px 12px;font-size:10px;line-height:2
-}
-.dot{
-  display:inline-block;width:9px;height:9px;
-  border-radius:50%;margin-right:7px
-}
-.kpis{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .kpi{
-  background:#0b192a;border:1px solid #293f56;
-  padding:10px;border-radius:7px;min-width:0
+ background:var(--panel2);border:1px solid var(--border);
+ border-radius:7px;padding:11px;min-width:0;
 }
-.kpi-label{font-size:9px;color:var(--muted);text-transform:uppercase}
-.kpi-value{font-size:20px;font-weight:800;margin-top:6px}
-.kpi-sub{font-size:9px;color:var(--muted);margin-top:4px}
-.metric{
-  display:flex;justify-content:space-between;gap:8px;
-  padding:8px 0;border-bottom:1px solid #23374b;
-  color:#b9c9d9;font-size:10px
+.kpi .value{font-size:21px;font-weight:800;margin:7px 0;color:white;overflow-wrap:anywhere}
+.kpi .name{font-size:10px;color:var(--muted)}
+.kpi .unit{font-size:9px;color:#8298b4}
+.chart-box{
+ background:var(--panel2);border:1px solid var(--border);
+ padding:10px;border-radius:7px;margin-bottom:11px;
+ height:220px;
 }
-.metric strong{text-align:right;color:#edf5fc}
-.chart-box{height:185px;position:relative;margin-top:8px}
+.chart-box canvas{max-height:175px}
+.check{
+ display:flex;align-items:center;gap:8px;margin:9px 0;
+ color:#bdcad9;font-size:11px;
+}
+.check input{accent-color:#20a7e8}
+.legend-item{display:flex;align-items:center;gap:8px;margin:7px 0;color:#aebdd0;font-size:10px}
+.swatch{width:13px;height:13px;border-radius:3px}
+.indicator{
+ display:flex;justify-content:space-between;gap:8px;
+ border-bottom:1px solid var(--border);padding:9px 0;
+ font-size:11px;
+}
+.indicator span:last-child{text-align:right;font-weight:700}
 footer{
-  text-align:center;padding:9px;background:#0b1727;
-  border-top:1px solid var(--line);color:#8298ae;font-size:9px
+ padding:13px 18px;color:#8294aa;text-align:center;
+ border-top:1px solid var(--border);font-size:10px;line-height:1.7;
 }
-#loading{
-  display:none;position:fixed;inset:0;z-index:2000;
-  align-items:center;justify-content:center;background:#06101bdc
+#log{font-size:10px;line-height:1.7;white-space:pre-wrap;color:#aabbd0}
+.leaflet-popup-content-wrapper,.leaflet-popup-tip{
+ background:#17263b;color:#e6edf7;
 }
-.loader{
-  background:#13253a;border:1px solid #38536e;
-  border-radius:9px;padding:22px 28px;text-align:center
+.leaflet-control-attribution{font-size:9px}
+.leaflet-control-layers{
+ background:#17263b!important;color:#fff!important;
 }
-.spinner{
-  width:28px;height:28px;border:3px solid #36536e;
-  border-top-color:#4cd4e9;border-radius:50%;
-  animation:spin .8s linear infinite;margin:0 auto 12px
+.leaflet-control-layers label{color:#fff}
+@media(max-width:1000px){
+ .layout{grid-template-columns:260px minmax(300px,1fr);height:auto}
+ #map-wrap{height:650px}
+ .right-panel{grid-column:1/-1}
 }
-@keyframes spin{to{transform:rotate(360deg)}}
-@media(max-width:1050px){
-  main{grid-template-columns:260px 1fr;height:auto}
-  .analytics{grid-column:1/-1}
-  #map-wrap{height:650px}
-  .panel{max-height:700px}
-}
-@media(max-width:700px){
-  header{height:auto}
-  .header-right{display:none}
-  main{display:flex;flex-direction:column;height:auto}
-  .panel{max-height:none}
-  #map-wrap{height:65vh;min-height:420px}
+@media(max-width:650px){
+ header{align-items:flex-start}
+ .layout{display:flex;flex-direction:column;height:auto}
+ .panel{max-height:none;overflow:visible}
+ #map-wrap{height:480px;flex:none}
+ .right-panel{width:100%}
 }
 </style>
 </head>
@@ -182,1109 +163,1242 @@ footer{
 <body>
 
 <header>
-  <div class="brand">
-    <div class="logo">GEO</div>
-    <div>
-      <h1>Public Transport Quality in The Gambia</h1>
-      <div class="subtitle">
-        Measuring scheduled service frequency, stop proximity and population coverage
-      </div>
-    </div>
+ <div class="brand">
+  <div class="logo">G</div>
+  <div>
+   <h1>GBoS GEOAI | Public Transport Quality</h1>
+   <p>THE GAMBIA • TRANSPORT ACCESSIBILITY INTELLIGENCE</p>
   </div>
-  <div class="header-right">
-    GAMBIA • TRANSPORT ACCESSIBILITY INTELLIGENCE
-    <br><span class="status" id="headerStatus">INITIALISING</span>
-  </div>
+ </div>
+ <div class="header-right">
+  <div class="status" id="systemStatus">INITIALISING</div>
+  <button onclick="loadAllData()" class="primary">LOAD ALL DATA</button>
+  <button onclick="refreshData()">REFRESH</button>
+ </div>
 </header>
 
-<main>
+<main class="layout">
 
-<!-- =====================================================
-     LEFT PANEL: CONTROLS
-===================================================== -->
+<!-- LEFT: CONTROL CENTRE -->
 <aside class="panel">
-<div class="inner">
+<div class="panel-inner">
 
-  <div class="section">
-    <div class="section-title">01 / DATA CONTROL CENTRE</div>
-    <h2>GitHub repository connection</h2>
+ <div class="section">
+  <div class="section-title">01 / DATA CONTROL CENTRE</div>
+  <h2>GitHub repository connection</h2>
 
-    <label>Repository</label>
-    <input id="repo" value="https://github.com/silkysingz94-oss/Public-Transport-Quality-in-The-Gambia">
-
-    <label>Branch</label>
-    <input id="branch" value="main">
-
-    <div class="button-row">
-      <button onclick="loadAllData()">LOAD ALL DATA</button>
-      <button class="secondary" onclick="reloadData()">REFRESH</button>
-    </div>
-
-    <div id="dataStatus" class="info">
-      Connecting to GitHub-hosted spatial data...
-    </div>
-
-    <div class="note">
-      Main repository assets:
-      Major_Road.geojson, Minor_Road.geojson and Census_EAs_Geo.json.
-    </div>
+  <div class="field">
+   <label>GitHub repository (owner/repository)</label>
+   <input id="repo" value="silkysingz94-oss/Public-Transport-Quality-in-The-Gambia">
   </div>
 
-  <div class="section">
-    <div class="section-title">02 / TRANSPORT DATA</div>
-    <h2>Public transport layers</h2>
-
-    <label>Optional transport stops GeoJSON</label>
-    <input type="file" id="stopsUpload" accept=".json,.geojson">
-
-    <label>Optional transport routes GeoJSON</label>
-    <input type="file" id="routesUpload" accept=".json,.geojson">
-
-    <button class="secondary" onclick="loadTransportUploads()" style="margin-top:8px">
-      LOAD TRANSPORT UPLOADS
-    </button>
-
-    <div class="note">
-      Transport stop and route datasets are not currently listed in the repository.
-      Upload them here or add them to GitHub using the filenames
-      transport_stops.geojson and transport_routes.geojson.
-    </div>
-    <div id="transportStatus" class="info warn">
-      Transport stops and scheduled routes have not yet been retrieved.
-    </div>
+  <div class="field">
+   <label>Branch</label>
+   <input id="branch" value="main">
   </div>
 
-  <div class="section">
-    <div class="section-title">03 / ADMINISTRATIVE SELECTION</div>
-    <h2>Gambia geographic filter</h2>
-
-    <label>Administrative level</label>
-    <select id="adminLevel" onchange="updateAreaList()">
-      <option value="lga">LGA</option>
-      <option value="district">District</option>
-      <option value="ward">Ward</option>
-      <option value="ea">Enumeration area</option>
-    </select>
-
-    <label>Selected area</label>
-    <select id="areaSelect" onchange="applyAreaSelection()">
-      <option value="ALL">All of The Gambia</option>
-    </select>
-
-    <div id="boundaryStatus" class="info">
-      Census EA boundaries are loading.
-    </div>
+  <div class="btn-row">
+   <button class="primary" onclick="loadAllData()">LOAD ALL DATA</button>
+   <button onclick="refreshData()">REFRESH</button>
   </div>
 
-  <div class="section">
-    <div class="section-title">04 / MAP LAYER CONFIGURATION</div>
+  <div id="repoStatus" class="note" style="margin-top:10px">
+   Waiting for repository connection.
+  </div>
+ </div>
 
-    <label class="check">
-      <input type="checkbox" id="showMajor" checked onchange="refreshMap()">
-      Major road network
-    </label>
-    <label class="check">
-      <input type="checkbox" id="showMinor" checked onchange="refreshMap()">
-      Minor road network
-    </label>
-    <label class="check">
-      <input type="checkbox" id="showStops" checked onchange="refreshMap()">
-      Transport stops and stations
-    </label>
-    <label class="check">
-      <input type="checkbox" id="showRoutes" checked onchange="refreshMap()">
-      Verified mapped transport routes
-    </label>
-    <label class="check">
-      <input type="checkbox" id="showBuffers" onchange="refreshMap()">
-      Stop proximity buffers
-    </label>
-    <label class="check">
-      <input type="checkbox" id="showEA" checked onchange="refreshMap()">
-      Enumeration area boundaries
-    </label>
+ <hr>
 
-    <label>Proximity distance</label>
-    <select id="bufferDistance" onchange="refreshMap()">
-      <option value="250">250 metres</option>
-      <option value="500" selected>500 metres</option>
-      <option value="750">750 metres</option>
-      <option value="1000">1 kilometre</option>
-    </select>
+ <div class="section">
+  <div class="section-title">02 / TRANSPORT DATA</div>
+  <h2>Public transport layers</h2>
+
+  <div class="field">
+   <label>Transport stops GeoJSON</label>
+   <input type="file" id="stopUpload" accept=".geojson,.json">
+  </div>
+  <div class="field">
+   <label>Transport routes GeoJSON</label>
+   <input type="file" id="routeUpload" accept=".geojson,.json">
   </div>
 
-  <div class="section">
-    <div class="section-title">05 / BASEMAP SWITCHER</div>
-    <label>Choose map background</label>
-    <select id="basemap" onchange="changeBasemap()">
-      <option value="street">Street map · OpenStreetMap</option>
-      <option value="satellite">Satellite · Esri World Imagery</option>
-      <option value="hybrid">Hybrid · Satellite and labels</option>
-      <option value="terrain">Terrain · OpenTopoMap</option>
-      <option value="light">Light canvas · Carto</option>
-      <option value="dark">Dark canvas · Carto</option>
-    </select>
-    <div class="note" id="basemapStatus">Basemap active: STREET</div>
+  <div class="btn-row">
+   <button onclick="loadTransportUploads()" class="primary">LOAD TRANSPORT UPLOADS</button>
+   <button onclick="clearTransport()">CLEAR</button>
+  </div>
+  <div class="note warning" style="margin-top:10px">
+   Expected repository filenames:
+   <b>transport_stops.geojson</b> and
+   <b>transport_routes.geojson</b>.
+   These datasets are optional. No transport features are fabricated.
+  </div>
+ </div>
+
+ <hr>
+
+ <div class="section">
+  <div class="section-title">03 / ADMINISTRATIVE SELECTION</div>
+  <h2>Gambia geographic filter</h2>
+
+  <div class="field">
+   <label>Region</label>
+   <select id="region" onchange="updateAdmin('region')">
+    <option value="">All regions</option>
+   </select>
   </div>
 
-  <div class="section">
-    <div class="section-title">06 / DATA EXPORTS</div>
-    <div class="button-row">
-      <button onclick="exportStopsCSV()">STOPS CSV</button>
-      <button onclick="exportStopsGeoJSON()">STOPS GEOJSON</button>
-    </div>
-    <div class="button-row">
-      <button class="secondary" onclick="exportRoads()">ROADS GEOJSON</button>
-      <button class="secondary" onclick="exportRoutes()">ROUTES GEOJSON</button>
-    </div>
-    <button class="secondary" style="margin-top:8px" onclick="exportFilteredEAs()">
-      EXPORT SELECTED EA GEOJSON
-    </button>
+  <div class="field">
+   <label>Local Government Area</label>
+   <select id="lga" onchange="updateAdmin('lga')">
+    <option value="">All LGAs</option>
+   </select>
   </div>
+
+  <div class="field">
+   <label>District</label>
+   <select id="district" onchange="updateAdmin('district')">
+    <option value="">All districts</option>
+   </select>
+  </div>
+
+  <div class="field">
+   <label>Ward</label>
+   <select id="ward" onchange="updateAdmin('ward')">
+    <option value="">All wards</option>
+   </select>
+  </div>
+
+  <div class="field">
+   <label>Enumeration Area</label>
+   <select id="ea" onchange="updateAdmin('ea')">
+    <option value="">All enumeration areas</option>
+   </select>
+  </div>
+
+  <div class="note" id="selectionInfo">Selected area: All of The Gambia</div>
+  <div class="btn-row" style="margin-top:9px">
+   <button onclick="resetAdmin()">RESET FILTERS</button>
+   <button onclick="zoomToData()">ZOOM TO AREA</button>
+  </div>
+ </div>
+
+ <hr>
+
+ <div class="section">
+  <div class="section-title">04 / MAP LAYER CONFIGURATION</div>
+  <h2>Layer visibility</h2>
+
+  <label class="check"><input type="checkbox" id="showMajor" checked onchange="renderLayers()"> Major road network</label>
+  <label class="check"><input type="checkbox" id="showMinor" checked onchange="renderLayers()"> Minor road network</label>
+  <label class="check"><input type="checkbox" id="showStops" checked onchange="renderLayers()"> Transport stops and stations</label>
+  <label class="check"><input type="checkbox" id="showRoutes" checked onchange="renderLayers()"> Verified mapped transport routes</label>
+  <label class="check"><input type="checkbox" id="showBuffers" checked onchange="renderLayers()"> Stop proximity buffers</label>
+  <label class="check"><input type="checkbox" id="showEA" checked onchange="renderLayers()"> Census EA boundaries</label>
+
+  <div class="field" style="margin-top:12px">
+   <label>Proximity distance</label>
+   <select id="bufferDistance" onchange="renderLayers();updateAnalytics()">
+    <option value="250">250 metres</option>
+    <option value="500" selected>500 metres</option>
+    <option value="750">750 metres</option>
+    <option value="1000">1 kilometre</option>
+   </select>
+  </div>
+ </div>
+
+ <hr>
+
+ <div class="section">
+  <div class="section-title">05 / BASEMAP SWITCHER</div>
+  <h2>Choose map background</h2>
+  <div class="field">
+   <select id="basemap" onchange="changeBasemap()">
+    <option value="street">Street map · OpenStreetMap</option>
+    <option value="satellite">Satellite · Esri World Imagery</option>
+    <option value="hybrid">Hybrid · Satellite and labels</option>
+    <option value="terrain">Terrain · OpenTopoMap</option>
+    <option value="light">Light canvas · Carto</option>
+    <option value="dark">Dark canvas · Carto</option>
+   </select>
+  </div>
+  <div class="note">Basemap active: <b id="basemapName">STREET</b></div>
+ </div>
+
+ <hr>
+
+ <div class="section">
+  <div class="section-title">06 / DATA EXPORTS</div>
+  <h2>Download spatial data</h2>
+  <div class="btn-row">
+   <button onclick="exportStopsCSV()">STOPS CSV</button>
+   <button onclick="exportGeoJSON('stops')">STOPS GEOJSON</button>
+  </div>
+  <div class="btn-row" style="margin-top:7px">
+   <button onclick="exportGeoJSON('major')">MAJOR ROADS</button>
+   <button onclick="exportGeoJSON('minor')">MINOR ROADS</button>
+  </div>
+  <div class="btn-row" style="margin-top:7px">
+   <button onclick="exportGeoJSON('routes')">ROUTES GEOJSON</button>
+   <button onclick="exportGeoJSON('ea')">SELECTED EA GEOJSON</button>
+  </div>
+ </div>
 
 </div>
 </aside>
 
-<!-- =====================================================
-     CENTRE PANEL: MAP
-===================================================== -->
+<!-- CENTRE: MAP -->
 <section id="map-wrap">
-  <div id="map"></div>
-
-  <div class="map-title">
-    <strong>THE GAMBIA | TRANSPORT ACCESSIBILITY</strong>
-    <span id="mapStatus">Loading spatial data...</span>
-  </div>
-
-  <div class="legend">
-    <div><span class="dot" style="background:#e7a33e"></span>Major roads</div>
-    <div><span class="dot" style="background:#e5d16a"></span>Minor roads</div>
-    <div><span class="dot" style="background:#35c6e8"></span>Transport stops</div>
-    <div><span class="dot" style="background:#d87538"></span>Transport routes</div>
-    <div><span class="dot" style="background:#39c58a"></span>500 m proximity</div>
-    <div><span class="dot" style="background:#9aaec2"></span>Census EA boundaries</div>
-  </div>
+ <div id="map"></div>
+ <div class="map-tag">
+  <strong>THE GAMBIA | TRANSPORT ACCESSIBILITY</strong>
+  <span id="mapSummary">Waiting for spatial datasets</span>
+ </div>
+ <div class="map-bottom" id="mapCoordinates">
+  GBoS GEOAI • GIS / CARTOGRAPHY UNIT
+ </div>
 </section>
 
-<!-- =====================================================
-     RIGHT PANEL: ANALYTICS
-===================================================== -->
-<aside class="panel analytics">
-<div class="inner">
+<!-- RIGHT: ANALYTICS -->
+<aside class="panel right-panel">
+<div class="panel-inner">
 
-  <div class="section">
-    <div class="section-title">07 / NETWORK OVERVIEW</div>
-    <h2>Spatial network indicators</h2>
-
-    <div class="kpis">
-      <div class="kpi">
-        <div class="kpi-label">Transport stops</div>
-        <div class="kpi-value" id="kStops">0</div>
-        <div class="kpi-sub">Point features</div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-label">Transport routes</div>
-        <div class="kpi-value" id="kRoutes">0</div>
-        <div class="kpi-sub">Line features</div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-label">Major road length</div>
-        <div class="kpi-value" id="kMajor">0 km</div>
-        <div class="kpi-sub">Mapped road geometry</div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-label">Minor road length</div>
-        <div class="kpi-value" id="kMinor">0 km</div>
-        <div class="kpi-sub">Mapped road geometry</div>
-      </div>
-    </div>
+ <div class="section">
+  <div class="section-title">07 / NETWORK OVERVIEW</div>
+  <h2>Spatial network indicators</h2>
+  <div class="kpi-grid">
+   <div class="kpi">
+    <div class="name">TRANSPORT STOPS</div>
+    <div class="value" id="kStops">0</div>
+    <div class="unit">Point features</div>
+   </div>
+   <div class="kpi">
+    <div class="name">TRANSPORT ROUTES</div>
+    <div class="value" id="kRoutes">0</div>
+    <div class="unit">Line features</div>
+   </div>
+   <div class="kpi">
+    <div class="name">MAJOR ROAD LENGTH</div>
+    <div class="value" id="kMajor">0 km</div>
+    <div class="unit">Mapped geometry</div>
+   </div>
+   <div class="kpi">
+    <div class="name">MINOR ROAD LENGTH</div>
+    <div class="value" id="kMinor">0 km</div>
+    <div class="unit">Mapped geometry</div>
+   </div>
   </div>
+ </div>
 
-  <div class="section">
-    <div class="section-title">08 / SELECTED GEOGRAPHY</div>
-    <h2>Administrative summary</h2>
-    <div class="metric"><span>Selected area</span><strong id="selectedName">All of The Gambia</strong></div>
-    <div class="metric"><span>Enumeration areas</span><strong id="eaCount">0</strong></div>
-    <div class="metric"><span>Mapped stops</span><strong id="areaStops">0</strong></div>
-    <div class="metric"><span>Mapped transport routes</span><strong id="areaRoutes">0</strong></div>
-    <div class="metric"><span>Major road length</span><strong id="areaMajor">0 km</strong></div>
-    <div class="metric"><span>Minor road length</span><strong id="areaMinor">0 km</strong></div>
-    <div class="metric"><span>EA area</span><strong id="eaArea">—</strong></div>
+ <hr>
+
+ <div class="section">
+  <div class="section-title">08 / SELECTED GEOGRAPHY</div>
+  <h2>Administrative summary</h2>
+  <div class="indicator"><span>Selected area</span><span id="sArea">All of The Gambia</span></div>
+  <div class="indicator"><span>Enumeration areas</span><span id="sEA">0</span></div>
+  <div class="indicator"><span>Mapped stops</span><span id="sStops">0</span></div>
+  <div class="indicator"><span>Mapped routes</span><span id="sRoutes">0</span></div>
+  <div class="indicator"><span>Major road length</span><span id="sMajor">0 km</span></div>
+  <div class="indicator"><span>Minor road length</span><span id="sMinor">0 km</span></div>
+  <div class="indicator"><span>EA area</span><span id="sAreaKm">0 km²</span></div>
+  <div class="indicator"><span>EA population (where available)</span><span id="sPopulation">Not available</span></div>
+ </div>
+
+ <hr>
+
+ <div class="section">
+  <div class="section-title">09 / ROAD NETWORK PROFILE</div>
+  <h2>Road length comparison</h2>
+  <div class="chart-box"><canvas id="roadChart"></canvas></div>
+ </div>
+
+ <hr>
+
+ <div class="section">
+  <div class="section-title">10 / TRANSPORT STOP PROFILE</div>
+  <h2>Stop categories</h2>
+  <div class="chart-box"><canvas id="stopChart"></canvas></div>
+ </div>
+
+ <hr>
+
+ <div class="section">
+  <div class="section-title">11 / SERVICE QUALITY INDICATORS</div>
+  <h2>Data availability assessment</h2>
+  <div class="indicator"><span>Service frequency</span><span id="frequencyStatus">Unavailable</span></div>
+  <div class="indicator"><span>Population coverage</span><span id="populationStatus">Not calculated</span></div>
+  <div class="indicator"><span>Stop proximity</span><span id="proximityStatus">Not modelled</span></div>
+  <div class="indicator"><span>Route availability</span><span id="routeStatus">Unavailable</span></div>
+  <div class="indicator"><span>Service reliability</span><span>Not assessed</span></div>
+  <div class="indicator"><span>Affordability</span><span>Not assessed</span></div>
+
+  <div class="note warning" style="margin-top:10px">
+   Road proximity is not equivalent to public transport accessibility.
+   Verified stops, operating routes, timetables, population and walking-network
+   data are required for a complete service-quality assessment.
   </div>
+ </div>
 
-  <div class="section">
-    <div class="section-title">09 / ROAD NETWORK PROFILE</div>
-    <h2>Road length comparison</h2>
-    <div class="chart-box"><canvas id="roadChart"></canvas></div>
+ <hr>
+
+ <div class="section">
+  <div class="section-title">12 / METHODOLOGY</div>
+  <h2>Spatial analysis framework</h2>
+  <div class="note">
+   <b>Road network:</b> Major and minor road geometry from GitHub.<br><br>
+   <b>Administrative geography:</b> Gambia Census Enumeration Areas.<br><br>
+   <b>Proximity:</b> Straight-line buffers around verified transport stops.<br><br>
+   <b>Road length:</b> Turf.js geometry length calculations.<br><br>
+   <b>Area selection:</b> Administrative attributes detected from EA data.<br><br>
+   <b>Population proxy:</b> Population associated with EAs intersecting stop buffers, where population attributes exist. This is not a precise population coverage measure.
   </div>
+ </div>
 
-  <div class="section">
-    <div class="section-title">10 / TRANSPORT STOP PROFILE</div>
-    <h2>Stop categories</h2>
-    <div class="chart-box"><canvas id="stopChart"></canvas></div>
-  </div>
+ <hr>
 
-  <div class="section">
-    <div class="section-title">11 / SERVICE QUALITY INDICATORS</div>
-    <h2>Data availability assessment</h2>
-    <div class="metric"><span>Service frequency</span><strong>Unavailable</strong></div>
-    <div class="metric"><span>Population coverage</span><strong>Not calculated</strong></div>
-    <div class="metric"><span>Walking accessibility</span><strong>Not modelled</strong></div>
-    <div class="metric"><span>Service reliability</span><strong>Not assessed</strong></div>
-    <div class="metric"><span>Affordability</span><strong>Not assessed</strong></div>
-
-    <div class="info warn">
-      Road proximity is not equivalent to public transport accessibility.
-      Verified stops, operating routes, timetables, population and walking-network data
-      are required for a full service-quality assessment.
-    </div>
-  </div>
-
-  <div class="section">
-    <div class="section-title">12 / METHODOLOGY</div>
-    <div class="note">
-      <b>Road network:</b> major and minor road geometry from the repository.
-      <br><br>
-      <b>Administrative geography:</b> Gambia Census Enumeration Areas.
-      <br><br>
-      <b>Proximity:</b> straight-line buffers around mapped transport stops.
-      <br><br>
-      <b>Road length:</b> Turf.js geometry length calculations.
-      <br><br>
-      <b>Area selection:</b> LGA, district, ward and EA attributes detected from the EA dataset.
-    </div>
-  </div>
-
-  <div class="section">
-    <div class="section-title">13 / DATA QUALITY</div>
-    <div id="qualityStatus" class="info">
-      Waiting for spatial datasets.
-    </div>
-  </div>
+ <div class="section">
+  <div class="section-title">13 / DATA QUALITY</div>
+  <h2>Dataset diagnostics</h2>
+  <div id="dataQuality" class="note">Waiting for spatial datasets.</div>
+  <div style="margin-top:10px;font-size:10px;color:var(--muted)">PROCESS LOG</div>
+  <div id="log">System initialised.</div>
+ </div>
 
 </div>
 </aside>
-
 </main>
 
 <footer>
-  Produced by Ansu Singhateh | GIS Analyst | GIS / Cartography Unit | Gambia Bureau of Statistics
-  <br>GBoS GEOAI • Research and educational use • © OpenStreetMap contributors
+ Produced by Ansu Singhateh | GIS Analyst | GIS / Cartography Unit | Gambia Bureau of Statistics<br>
+ GBoS GEOAI • Research and educational use • © OpenStreetMap contributors
 </footer>
 
-<div id="loading">
-  <div class="loader">
-    <div class="spinner"></div>
-    <div id="loadingText">Loading spatial data...</div>
-  </div>
-</div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/@turf/turf@7.2.0/turf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 
 <script>
-/* ==========================================================
-   CONFIGURATION: GITHUB RAW DATA
-========================================================== */
+// ======================================================
+// 1. APPLICATION CONFIGURATION
+// ======================================================
 
-const RAW =
-"https://raw.githubusercontent.com/silkysingz94-oss/Public-Transport-Quality-in-The-Gambia/main/";
+const DEFAULT_REPO = "silkysingz94-oss/Public-Transport-Quality-in-The-Gambia";
 
 const FILES = {
-  major: RAW + "Major_Road.geojson",
-  minor: RAW + "Minor_Road.geojson",
-  ea: RAW + "Census_EAs_Geo.json",
-
-  // Optional files. Add these to GitHub when available.
-  stops: RAW + "transport_stops.geojson",
-  routes: RAW + "transport_routes.geojson"
+ major: ["Major_Road.geojson","Major_Road.json"],
+ minor: ["Minor_Road.geojson","Minor_Road.json"],
+ ea: ["Census_EAs_Geo.json","Census_EAs_Geo.geojson"],
+ stops: ["transport_stops.geojson","transport_stops.json"],
+ routes: ["transport_routes.geojson","transport_routes.json"]
 };
 
-let majorData = emptyFC();
-let minorData = emptyFC();
-let eaData = emptyFC();
-let stopData = emptyFC();
-let routeData = emptyFC();
-
-let selectedEAs = [];
-let selectedArea = "ALL";
-let roadChart = null;
-let stopChart = null;
-
-function emptyFC(){
-  return {type:"FeatureCollection",features:[]};
-}
-const $ = id => document.getElementById(id);
-
-function showLoading(message){
-  $("loadingText").textContent=message;
-  $("loading").style.display="flex";
-}
-function hideLoading(){
-  $("loading").style.display="none";
-}
-function setInfo(id,message,type=""){
-  $(id).textContent=message;
-  $(id).className="info "+type;
-}
-function number(n,d=1){
-  return Number(n||0).toLocaleString(undefined,{maximumFractionDigits:d});
-}
-function escapeHTML(s){
-  return String(s??"").replace(/[&<>"']/g,c=>({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-  }[c]));
-}
-
-/* ==========================================================
-   MAP INITIALISATION
-========================================================== */
-
-const map=L.map("map",{preferCanvas:true,zoomControl:true});
-
-map.fitBounds([
-  [13.0646,-16.8174],
-  [13.8269,-13.7909]
-]);
-
-let activeBasemap=[];
-
-const basemaps={
-  street:L.tileLayer(
-    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-    {maxZoom:19,attribution:"© OpenStreetMap contributors"}
-  ),
-  satellite:L.tileLayer(
-    "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-    {maxZoom:19,attribution:"Tiles © Esri"}
-  ),
-  terrain:L.tileLayer(
-    "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
-    {maxZoom:17,attribution:"© OpenTopoMap"}
-  ),
-  light:L.tileLayer(
-    "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
-    {maxZoom:20,attribution:"© CARTO"}
-  ),
-  dark:L.tileLayer(
-    "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
-    {maxZoom:20,attribution:"© CARTO"}
-  )
+const DATA = {
+ major:null,
+ minor:null,
+ ea:null,
+ stops:null,
+ routes:null
 };
+
+const layers = {
+ major:L.layerGroup(),
+ minor:L.layerGroup(),
+ ea:L.layerGroup(),
+ stops:L.markerClusterGroup(),
+ routes:L.layerGroup(),
+ buffers:L.layerGroup()
+};
+
+let map, baseLayers={}, activeBase=null;
+let selectedEA=[];
+let adminFields={};
+let roadChart=null,stopChart=null;
+let repoTree=[];
+let lastBufferFeatures=[];
+let loadErrors=[];
+
+// ======================================================
+// 2. MAP INITIALISATION
+// ======================================================
+
+map=L.map("map",{zoomControl:true}).setView([13.4432,-15.3101],8);
+
+baseLayers.street=L.tileLayer(
+ "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+ {maxZoom:19,attribution:"© OpenStreetMap"}
+);
+
+baseLayers.satellite=L.tileLayer(
+ "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+ {maxZoom:19,attribution:"Tiles © Esri"}
+);
+
+baseLayers.labels=L.tileLayer(
+ "https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png",
+ {maxZoom:20,attribution:"© CARTO"}
+);
+
+baseLayers.terrain=L.tileLayer(
+ "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+ {maxZoom:17,attribution:"© OpenTopoMap"}
+);
+
+baseLayers.light=L.tileLayer(
+ "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+ {maxZoom:20,attribution:"© CARTO"}
+);
+
+baseLayers.dark=L.tileLayer(
+ "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+ {maxZoom:20,attribution:"© CARTO"}
+);
 
 function changeBasemap(){
-  activeBasemap.forEach(l=>map.removeLayer(l));
-  activeBasemap=[];
+ const name=document.getElementById("basemap").value;
+ if(activeBase)map.removeLayer(activeBase);
+ if(map.hasLayer(baseLayers.labels))map.removeLayer(baseLayers.labels);
 
-  const choice=$("basemap").value;
+ activeBase=baseLayers[name];
+ activeBase.addTo(map);
 
-  if(choice==="hybrid"){
-    const imagery=L.tileLayer(
-      "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-      {maxZoom:19,attribution:"Tiles © Esri"}
-    );
-    const labels=L.tileLayer(
-      "https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png",
-      {maxZoom:20,opacity:.9,attribution:"© CARTO"}
-    );
-    imagery.addTo(map);
-    labels.addTo(map);
-    activeBasemap=[imagery,labels];
-  }else{
-    const layer=basemaps[choice]||basemaps.street;
-    layer.addTo(map);
-    activeBasemap=[layer];
-  }
+ if(name==="hybrid"){
+  activeBase=baseLayers.satellite;
+  activeBase.addTo(map);
+  baseLayers.labels.addTo(map);
+ }
 
-  $("basemapStatus").textContent="Basemap active: "+choice.toUpperCase();
+ document.getElementById("basemapName").textContent=name.toUpperCase();
 }
 
 changeBasemap();
 
-/* ==========================================================
-   MAP LAYERS
-========================================================== */
+Object.values(layers).forEach(l=>l.addTo(map));
 
-const majorLayer=L.geoJSON(null,{
-  style:{color:"#e7a33e",weight:2.6,opacity:.95}
-}).addTo(map);
+// ======================================================
+// 3. GENERAL HELPERS
+// ======================================================
 
-const minorLayer=L.geoJSON(null,{
-  style:{color:"#e5d16a",weight:1.1,opacity:.75}
-}).addTo(map);
-
-const eaLayer=L.geoJSON(null,{
-  style:{color:"#93a8bd",weight:.55,opacity:.5,fillOpacity:.015}
-}).addTo(map);
-
-const selectedLayer=L.geoJSON(null,{
-  style:{color:"#f3c34d",weight:2.5,fillColor:"#f3c34d",fillOpacity:.12}
-}).addTo(map);
-
-const stopsLayer=L.layerGroup().addTo(map);
-const routesLayer=L.layerGroup().addTo(map);
-const buffersLayer=L.layerGroup();
-
-/* ==========================================================
-   DATA LOADING
-========================================================== */
-
-async function fetchGeoJSON(url){
-  const response=await fetch(url);
-  if(!response.ok){
-    throw new Error("HTTP "+response.status+" while loading "+url);
-  }
-  const data=await response.json();
-  return normalise(data);
+function log(message){
+ const el=document.getElementById("log");
+ el.textContent=new Date().toLocaleTimeString()+" | "+message+"\n"+el.textContent;
 }
 
-function normalise(data){
-  if(data.type==="FeatureCollection" && Array.isArray(data.features)){
-    return data;
-  }
-  if(data.type==="Feature"){
-    return {type:"FeatureCollection",features:[data]};
-  }
-  if(Array.isArray(data)){
-    return {type:"FeatureCollection",features:data.filter(f=>f&&f.geometry)};
-  }
-  if(data.elements){
-    return convertOSM(data);
-  }
-  throw new Error("Unsupported GeoJSON or JSON format.");
+function status(message,color){
+ const el=document.getElementById("systemStatus");
+ el.textContent=message;
+ el.style.color=color||"#38c98c";
 }
 
-function convertOSM(data){
-  const features=[];
-  const nodes={};
-
-  (data.elements||[]).forEach(e=>{
-    if(e.type==="node") nodes[e.id]=e;
-  });
-
-  (data.elements||[]).forEach(e=>{
-    if(e.type==="node" && e.lon!=null && e.lat!=null){
-      features.push({
-        type:"Feature",
-        properties:{...(e.tags||{}),osm_id:e.id},
-        geometry:{type:"Point",coordinates:[e.lon,e.lat]}
-      });
-    }
-
-    if(e.type==="way" && Array.isArray(e.geometry)){
-      const coords=e.geometry.map(p=>[p.lon,p.lat]);
-      if(coords.length<2)return;
-
-      const closed=coords.length>3 &&
-        coords[0][0]===coords[coords.length-1][0] &&
-        coords[0][1]===coords[coords.length-1][1];
-
-      features.push({
-        type:"Feature",
-        properties:{...(e.tags||{}),osm_id:e.id},
-        geometry:{
-          type:closed?"Polygon":"LineString",
-          coordinates:closed?[coords]:coords
-        }
-      });
-    }
-  });
-
-  return {type:"FeatureCollection",features};
+function setRepoMessage(message,type="success"){
+ const el=document.getElementById("repoStatus");
+ el.textContent=message;
+ el.className="note "+type;
 }
 
-function filterGeometry(data,types){
-  return {
-    type:"FeatureCollection",
-    features:(data.features||[]).filter(f=>
-      f.geometry && types.includes(f.geometry.type)
-    )
-  };
+function fmt(n,d=2){
+ if(!Number.isFinite(Number(n)))return "0";
+ return Number(n).toLocaleString(undefined,{
+  maximumFractionDigits:d,
+  minimumFractionDigits:0
+ });
+}
+
+function collection(data){
+ if(!data)return [];
+ if(data.type==="FeatureCollection")return data.features||[];
+ if(data.type==="Feature")return [data];
+ return [];
+}
+
+function makeCollection(features){
+ return {type:"FeatureCollection",features:features||[]};
+}
+
+function getProperties(f){
+ return f && f.properties ? f.properties : {};
+}
+
+function getNumber(p,keys){
+ for(const k of keys){
+  const key=Object.keys(p).find(x=>x.toLowerCase()===k.toLowerCase());
+  if(key!==undefined && p[key]!==null && p[key]!=="" && Number.isFinite(Number(p[key]))){
+   return Number(p[key]);
+  }
+ }
+ return null;
+}
+
+function getValue(p,keys){
+ for(const k of keys){
+  const key=Object.keys(p).find(x=>x.toLowerCase()===k.toLowerCase());
+  if(key!==undefined && p[key]!==null && String(p[key]).trim()!==""){
+   return String(p[key]);
+  }
+ }
+ return "";
+}
+
+function uniqueValues(features,key){
+ return [...new Set(features.map(f=>getProperties(f)[key])
+  .filter(v=>v!==null && v!==undefined && String(v).trim()!=="")
+  .map(v=>String(v)))].sort((a,b)=>a.localeCompare(b));
+}
+
+function setOptions(id,values,placeholder){
+ const el=document.getElementById(id);
+ const old=el.value;
+ el.innerHTML="";
+ const first=document.createElement("option");
+ first.value="";
+ first.textContent=placeholder;
+ el.appendChild(first);
+ values.forEach(v=>{
+  const o=document.createElement("option");
+  o.value=v;o.textContent=v;el.appendChild(o);
+ });
+ if(values.includes(old))el.value=old;
+}
+
+function validGeoJSON(data){
+ return data && (
+  data.type==="FeatureCollection" ||
+  data.type==="Feature"
+ );
+}
+
+function downloadFile(name,content,type){
+ const blob=new Blob([content],{type});
+ const url=URL.createObjectURL(blob);
+ const a=document.createElement("a");
+ a.href=url;a.download=name;a.click();
+ URL.revokeObjectURL(url);
+}
+
+function bboxIntersects(a,b){
+ return !(a[2]<b[0]||a[0]>b[2]||a[3]<b[1]||a[1]>b[3]);
+}
+
+// ======================================================
+// 4. GITHUB REPOSITORY CONNECTION
+// ======================================================
+
+async function githubJSON(url){
+ const response=await fetch(url,{
+  headers:{"Accept":"application/vnd.github+json"}
+ });
+ if(!response.ok)throw new Error("GitHub HTTP "+response.status+" for "+url);
+ return response.json();
+}
+
+async function getRepository(){
+ const repo=document.getElementById("repo").value.trim();
+ if(!repo.includes("/"))throw new Error("Enter owner/repository.");
+ const info=await githubJSON("https://api.github.com/repos/"+repo);
+ const branchInput=document.getElementById("branch");
+ if(!branchInput.value.trim())branchInput.value=info.default_branch;
+ return {repo,branch:branchInput.value.trim()||info.default_branch};
+}
+
+async function findRepositoryFiles(repo,branch){
+ const url="https://api.github.com/repos/"+repo+"/git/trees/"+encodeURIComponent(branch)+"?recursive=1";
+ const tree=await githubJSON(url);
+ if(tree.truncated)log("GitHub tree is truncated; checking available paths.");
+ repoTree=tree.tree||[];
+ return repoTree.filter(x=>x.type==="blob");
+}
+
+function findFile(names){
+ for(const name of names){
+  const found=repoTree.find(x=>x.path.split("/").pop().toLowerCase()===name.toLowerCase());
+  if(found)return found;
+ }
+ return null;
+}
+
+async function loadGithubAsset(repo,branch,key){
+ const file=findFile(FILES[key]);
+ if(!file){
+  log(key+" not found in repository.");
+  return null;
+ }
+ const url="https://raw.githubusercontent.com/"+repo+"/"+encodeURIComponent(branch)+"/"+file.path;
+ const response=await fetch(url);
+ if(!response.ok)throw new Error("Unable to retrieve "+file.path);
+ const data=await response.json();
+ if(!validGeoJSON(data))throw new Error(file.path+" is not valid GeoJSON.");
+ log("Loaded "+file.path+" ("+collection(data).length+" features)");
+ return data;
 }
 
 async function loadAllData(){
-  showLoading("Loading Gambia spatial datasets...");
-  const results={};
+ status("CONNECTING","#f5a742");
+ loadErrors=[];
+ try{
+  const {repo,branch}=await getRepository();
+  setRepoMessage("Connecting to "+repo+" / "+branch);
+  log("Connecting to GitHub repository.");
 
-  try{
-    const tasks=[
-      ["major",FILES.major],
-      ["minor",FILES.minor],
-      ["ea",FILES.ea]
-    ];
+  await findRepositoryFiles(repo,branch);
 
-    await Promise.all(tasks.map(async([key,url])=>{
-      try{
-        results[key]=await fetchGeoJSON(url);
-      }catch(error){
-        console.error("Dataset error:",key,error);
-        results[key]=emptyFC();
-        results[key].loadError=error.message;
-      }
-    }));
-
-    majorData=filterGeometry(results.major,["LineString","MultiLineString"]);
-    minorData=filterGeometry(results.minor,["LineString","MultiLineString"]);
-    eaData=filterGeometry(results.ea,["Polygon","MultiPolygon"]);
-
-    if(!majorData.features.length && !minorData.features.length && !eaData.features.length){
-      throw new Error("No spatial datasets could be loaded. Check GitHub raw URLs and repository files.");
-    }
-
-    // Optional transport files. Missing files are expected until supplied.
-    try{
-      stopData=filterGeometry(await fetchGeoJSON(FILES.stops),["Point","MultiPoint"]);
-    }catch(e){
-      stopData=emptyFC();
-      console.info("Optional stops file not yet available.");
-    }
-
-    try{
-      routeData=filterGeometry(await fetchGeoJSON(FILES.routes),["LineString","MultiLineString"]);
-    }catch(e){
-      routeData=emptyFC();
-      console.info("Optional transport routes file not yet available.");
-    }
-
-    eaLayer.clearLayers();
-    eaLayer.addData(eaData);
-
-    updateAreaList();
-    refreshMap();
-    updateAnalytics();
-    zoomToData();
-
-    const messages=[
-      `Major roads: ${majorData.features.length.toLocaleString()}`,
-      `Minor roads: ${minorData.features.length.toLocaleString()}`,
-      `Census EAs: ${eaData.features.length.toLocaleString()}`,
-      `Transport stops: ${stopData.features.length.toLocaleString()}`,
-      `Transport routes: ${routeData.features.length.toLocaleString()}`
-    ];
-
-    setInfo("dataStatus",messages.join(" | "),"good");
-    setInfo("boundaryStatus",
-      `${eaData.features.length.toLocaleString()} EA polygons loaded. Administrative filters are available where attributes exist.`,
-      "good"
-    );
-
-    if(!stopData.features.length || !routeData.features.length){
-      setInfo("transportStatus",
-        "Road and EA datasets loaded successfully. Dedicated public transport stops and route datasets are not yet available.",
-        "warn"
-      );
-    }else{
-      setInfo("transportStatus",
-        `${stopData.features.length} stops and ${routeData.features.length} route features loaded.`,
-        "good"
-      );
-    }
-
-    $("headerStatus").textContent="SPATIAL DATA LOADED";
-    $("mapStatus").textContent=
-      `${majorData.features.length.toLocaleString()} major roads • ${minorData.features.length.toLocaleString()} minor roads`;
-
-    $("qualityStatus").textContent=
-      "Road network and census geography retrieved from GitHub. Public transport service frequency and reliability are not established by these layers.";
-
-  }catch(error){
-    console.error(error);
-    setInfo("dataStatus",error.message,"error");
-    $("headerStatus").textContent="DATA ERROR";
-  }finally{
-    hideLoading();
-    map.invalidateSize();
+  const keys=["major","minor","ea","stops","routes"];
+  for(const key of keys){
+   try{
+    DATA[key]=await loadGithubAsset(repo,branch,key);
+   }catch(e){
+    DATA[key]=null;
+    loadErrors.push(key+": "+e.message);
+    log(e.message);
+   }
   }
+
+  initialiseAdminFields();
+  populateAdmin();
+  updateAdmin("all");
+  renderLayers();
+  updateAnalytics();
+  updateDataQuality();
+  zoomToData();
+
+  const available=keys.filter(k=>DATA[k]).length;
+  setRepoMessage(
+   "Repository connected. "+available+" of 5 spatial datasets retrieved. "+
+   (loadErrors.length?loadErrors.join(" | "):"")
+  ,loadErrors.length?"warning":"success");
+
+  status(loadErrors.length?"PARTIAL DATA":"DATA LOADED",
+   loadErrors.length?"#f5a742":"#38c98c");
+
+ }catch(e){
+  status("DATA ERROR","#f06464");
+  setRepoMessage(e.message,"error");
+  log("Repository error: "+e.message);
+  updateDataQuality();
+ }
 }
 
-function reloadData(){
-  majorData=emptyFC();
-  minorData=emptyFC();
-  eaData=emptyFC();
-  stopData=emptyFC();
-  routeData=emptyFC();
-  loadAllData();
+async function refreshData(){
+ await loadAllData();
 }
 
-/* ==========================================================
-   OPTIONAL LOCAL TRANSPORT UPLOADS
-========================================================== */
+// ======================================================
+// 5. ADMINISTRATIVE FIELD DETECTION
+// ======================================================
 
-async function readFile(input){
-  const file=input.files[0];
-  if(!file)return null;
-  return normalise(JSON.parse(await file.text()));
+function detectField(features,candidates){
+ if(!features.length)return null;
+ const props=getProperties(features[0]);
+ const keys=Object.keys(props);
+ for(const candidate of candidates){
+  const found=keys.find(k=>k.toLowerCase()===candidate.toLowerCase());
+  if(found)return found;
+ }
+ return null;
+}
+
+function initialiseAdminFields(){
+ const features=collection(DATA.ea);
+ adminFields={
+  region:detectField(features,["RCO","region","regionname","region_name"]),
+  lga:detectField(features,["lganame","lga","lga_name"]),
+  district:detectField(features,["distname","district","districtname"]),
+  ward:detectField(features,["wardname","ward","ward_name"]),
+  ea:detectField(features,["feacode","eaname","ea_code","ea","ea_id"])
+ };
+ log("Administrative fields detected: "+JSON.stringify(adminFields));
+}
+
+function currentAdmin(){
+ return {
+  region:document.getElementById("region").value,
+  lga:document.getElementById("lga").value,
+  district:document.getElementById("district").value,
+  ward:document.getElementById("ward").value,
+  ea:document.getElementById("ea").value
+ };
+}
+
+function matchesAdmin(f,filters){
+ const p=getProperties(f);
+ for(const level of ["region","lga","district","ward","ea"]){
+  const selected=filters[level];
+  const field=adminFields[level];
+  if(selected && field && String(p[field])!==selected)return false;
+ }
+ return true;
+}
+
+function filteredFeatures(features){
+ const filters=currentAdmin();
+ return features.filter(f=>matchesAdmin(f,filters));
+}
+
+function populateAdmin(){
+ const features=collection(DATA.ea);
+ if(!features.length)return;
+
+ const r=adminFields.region,l=adminFields.lga;
+ const d=adminFields.district,w=adminFields.ward,e=adminFields.ea;
+
+ setOptions("region",r?uniqueValues(features,r):[],"All regions");
+ setOptions("lga",l?uniqueValues(features,l):[],"All LGAs");
+ setOptions("district",d?uniqueValues(features,d):[],"All districts");
+ setOptions("ward",w?uniqueValues(features,w):[],"All wards");
+ setOptions("ea",e?uniqueValues(features,e):[],"All enumeration areas");
+}
+
+function updateAdmin(changed){
+ const features=collection(DATA.ea);
+ if(!features.length){
+  selectedEA=[];
+  updateAnalytics();
+  renderLayers();
+  return;
+ }
+
+ const order=["region","lga","district","ward","ea"];
+ const index=order.indexOf(changed);
+
+ if(changed==="all"){
+  selectedEA=features;
+ }else{
+  // Clear lower-level filters after a parent selection changes.
+  for(let i=index+1;i<order.length;i++){
+   document.getElementById(order[i]).value="";
+  }
+  const filters=currentAdmin();
+  selectedEA=features.filter(f=>matchesAdmin(f,filters));
+ }
+
+ updateSelectionLabel();
+ renderLayers();
+ updateAnalytics();
+}
+
+function resetAdmin(){
+ ["region","lga","district","ward","ea"].forEach(id=>{
+  document.getElementById(id).value="";
+ });
+ updateAdmin("all");
+ zoomToData();
+}
+
+function updateSelectionLabel(){
+ const f=currentAdmin();
+ const names=[
+  f.ea? "EA: "+f.ea:null,
+  f.ward? "Ward: "+f.ward:null,
+  f.district? "District: "+f.district:null,
+  f.lga? "LGA: "+f.lga:null,
+  f.region? "Region: "+f.region:null
+ ].filter(Boolean);
+
+ const name=names[0]||"All of The Gambia";
+ document.getElementById("selectionInfo").textContent=
+  "Selected area: "+name+" | "+selectedEA.length.toLocaleString()+" EAs";
+ document.getElementById("sArea").textContent=name;
+}
+
+// ======================================================
+// 6. SPATIAL SELECTION AND FILTERING
+// ======================================================
+
+function selectedBounds(){
+ if(!selectedEA.length)return null;
+ try{return turf.bbox(makeCollection(selectedEA));}
+ catch(e){return null;}
+}
+
+function spatialFilter(features){
+ if(!selectedEA.length)return [];
+ if(selectedEA.length===collection(DATA.ea).length)return features;
+
+ const bounds=selectedBounds();
+ if(!bounds)return features;
+
+ return features.filter(f=>{
+  try{
+   const b=turf.bbox(f);
+   return bboxIntersects(bounds,b);
+  }catch(e){return false;}
+ });
+}
+
+function getCurrentData(key){
+ if(!DATA[key])return [];
+ if(key==="ea")return selectedEA;
+ return spatialFilter(collection(DATA[key]));
+}
+
+function zoomToData(){
+ // Explicitly defined to prevent the original application error.
+ const features=selectedEA.length?selectedEA:
+  Object.values(DATA).filter(Boolean).flatMap(collection);
+
+ if(!features.length){
+  map.setView([13.4432,-15.3101],8);
+  return;
+ }
+
+ try{
+  const bounds=L.geoJSON(makeCollection(features)).getBounds();
+  if(bounds.isValid())map.fitBounds(bounds,{padding:[25,25],maxZoom:14});
+ }catch(e){
+  log("Zoom error: "+e.message);
+ }
+}
+
+// ======================================================
+// 7. TRANSPORT FILE UPLOADS
+// ======================================================
+
+async function readUpload(input){
+ const file=input.files[0];
+ if(!file)return null;
+ const data=JSON.parse(await file.text());
+ if(!validGeoJSON(data))throw new Error("Uploaded file is not valid GeoJSON.");
+ return data;
 }
 
 async function loadTransportUploads(){
-  showLoading("Reading uploaded transport data...");
-  try{
-    const stops=await readFile($("stopsUpload"));
-    const routes=await readFile($("routesUpload"));
+ try{
+  const stop=await readUpload(document.getElementById("stopUpload"));
+  const route=await readUpload(document.getElementById("routeUpload"));
 
-    if(!stops&&!routes){
-      throw new Error("Select a transport stops or routes GeoJSON file.");
-    }
+  if(stop)DATA.stops=stop;
+  if(route)DATA.routes=route;
 
-    if(stops)stopData=filterGeometry(stops,["Point","MultiPoint"]);
-    if(routes)routeData=filterGeometry(routes,["LineString","MultiLineString"]);
-
-    refreshMap();
-    updateAnalytics();
-
-    setInfo("transportStatus",
-      `${stopData.features.length} transport stops and ${routeData.features.length} route features loaded from upload.`,
-      "good"
-    );
-  }catch(error){
-    setInfo("transportStatus",error.message,"error");
-  }finally{
-    hideLoading();
-  }
-}
-
-/* ==========================================================
-   ADMINISTRATIVE ATTRIBUTE DETECTION
-========================================================== */
-
-function getProperty(feature,patterns){
-  const props=feature.properties||{};
-  const keys=Object.keys(props);
-
-  for(const pattern of patterns){
-    const key=keys.find(k=>pattern.test(k.toLowerCase()));
-    if(key && props[key]!=null && String(props[key]).trim()!==""){
-      return props[key];
-    }
-  }
-  return null;
-}
-
-function getLGA(f){
-  return getProperty(f,[/^lganame$/,/^lga$/, /local.*government/, /lga_name/]);
-}
-function getDistrict(f){
-  return getProperty(f,[/^distname$/,/^district$/, /district_name/]);
-}
-function getWard(f){
-  return getProperty(f,[/^wardname$/,/^ward$/, /ward_name/]);
-}
-function getEA(f){
-  return getProperty(f,[/^eaname$/,/^feacode$/,/^ea_code$/,/enumeration/]);
-}
-
-function getAdminValue(feature,level){
-  if(level==="lga")return getLGA(feature);
-  if(level==="district")return getDistrict(feature);
-  if(level==="ward")return getWard(feature);
-  return getEA(feature);
-}
-
-function updateAreaList(){
-  const level=$("adminLevel").value;
-  const select=$("areaSelect");
-  const previous=select.value;
-
-  select.innerHTML='<option value="ALL">All of The Gambia</option>';
-
-  const values=[...new Set(
-    eaData.features.map(f=>getAdminValue(f,level))
-      .filter(v=>v!==null && v!==undefined)
-      .map(v=>String(v))
-  )].sort();
-
-  values.forEach(value=>{
-    const option=document.createElement("option");
-    option.value=value;
-    option.textContent=value;
-    select.appendChild(option);
-  });
-
-  if(values.includes(previous)){
-    select.value=previous;
-    selectedArea=previous;
-  }else{
-    selectedArea="ALL";
-  }
-  applyAreaSelection();
-}
-
-function applyAreaSelection(){
-  selectedArea=$("areaSelect").value;
-  selectedLayer.clearLayers();
-
-  const level=$("adminLevel").value;
-
-  selectedEAs=selectedArea==="ALL"
-    ?eaData.features.slice()
-    :eaData.features.filter(f=>
-      String(getAdminValue(f,level))===selectedArea
-    );
-
-  if(selectedArea!=="ALL"){
-    selectedLayer.addData({
-      type:"FeatureCollection",
-      features:selectedEAs
-    });
-  }
-
-  $("selectedName").textContent=
-    selectedArea==="ALL"?"All of The Gambia":selectedArea;
-
-  refreshMap();
+  renderLayers();
   updateAnalytics();
-
-  if(selectedEAs.length){
-    const group=L.geoJSON({
-      type:"FeatureCollection",features:selectedEAs
-    });
-    const bounds=group.getBounds();
-    if(bounds.isValid())map.fitBounds(bounds.pad(.08));
-  }
+  updateDataQuality();
+  zoomToData();
+  log("Transport uploads processed.");
+ }catch(e){
+  alert("Upload error: "+e.message);
+ }
 }
 
-/* ==========================================================
-   FILTERING
-========================================================== */
+function clearTransport(){
+ DATA.stops=null;
+ DATA.routes=null;
+ renderLayers();
+ updateAnalytics();
+ updateDataQuality();
+ log("Transport layers cleared.");
+}
 
-function pointInSelectedArea(feature){
-  if(selectedArea==="ALL")return true;
-  if(!selectedEAs.length)return false;
+// ======================================================
+// 8. SPATIAL STYLING AND MAP LAYERS
+// ======================================================
 
-  try{
-    if(feature.geometry.type==="Point"){
-      return selectedEAs.some(poly=>
-        turf.booleanPointInPolygon(feature,poly)
-      );
+function roadStyle(color,weight,opacity){
+ return {color,weight,opacity,lineCap:"round",lineJoin:"round"};
+}
+
+function eaStyle(feature){
+ return {
+  color:"#829bb5",weight:.55,opacity:.7,
+  fillColor:"#263c55",fillOpacity:.10
+ };
+}
+
+function selectedEAStyle(){
+ return {
+  color:"#29d4c8",weight:1.3,opacity:1,
+  fillColor:"#20a8bd",fillOpacity:.14
+ };
+}
+
+function featurePopup(feature,title){
+ const p=getProperties(feature);
+ let html="<b>"+title+"</b><hr style='border-color:#40516a'>";
+ Object.entries(p).slice(0,12).forEach(([k,v])=>{
+  html+="<div><b>"+escapeHTML(k)+":</b> "+escapeHTML(String(v??""))+"</div>";
+ });
+ return html;
+}
+
+function escapeHTML(value){
+ return String(value).replace(/[&<>"']/g,c=>({
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+ })[c]);
+}
+
+function renderLayers(){
+ Object.values(layers).forEach(l=>l.clearLayers());
+
+ const major=getCurrentData("major");
+ const minor=getCurrentData("minor");
+ const routes=getCurrentData("routes");
+ const stops=getCurrentData("stops");
+ const eas=selectedEA;
+
+ if(document.getElementById("showMajor").checked && major.length){
+  L.geoJSON(makeCollection(major),{
+   style:()=>roadStyle("#36a6ff",2.5,.9),
+   onEachFeature:(f,l)=>l.bindPopup(featurePopup(f,"Major road"))
+  }).addTo(layers.major);
+ }
+
+ if(document.getElementById("showMinor").checked && minor.length){
+  L.geoJSON(makeCollection(minor),{
+   style:()=>roadStyle("#f2a94a",1.4,.8),
+   onEachFeature:(f,l)=>l.bindPopup(featurePopup(f,"Minor road"))
+  }).addTo(layers.minor);
+ }
+
+ if(document.getElementById("showRoutes").checked && routes.length){
+  L.geoJSON(makeCollection(routes),{
+   style:()=>roadStyle("#e64cce",3,.95),
+   onEachFeature:(f,l)=>l.bindPopup(featurePopup(f,"Mapped transport route"))
+  }).addTo(layers.routes);
+ }
+
+ if(document.getElementById("showEA").checked && eas.length){
+  L.geoJSON(makeCollection(eas),{
+   style:eaStyle,
+   onEachFeature:(f,l)=>{
+    l.setStyle(selectedEAStyle());
+    l.bindPopup(featurePopup(f,"Census Enumeration Area"));
+   }
+  }).addTo(layers.ea);
+ }
+
+ if(document.getElementById("showStops").checked && stops.length){
+  stops.forEach(f=>{
+   try{
+    const coords=f.geometry.coordinates;
+    if(!coords||!Number.isFinite(coords[0])||!Number.isFinite(coords[1]))return;
+    const marker=L.circleMarker([coords[1],coords[0]],{
+     radius:6,color:"#fff",weight:1,
+     fillColor:"#29d4c8",fillOpacity:.95
+    });
+    marker.bindPopup(featurePopup(f,"Transport stop"));
+    layers.stops.addLayer(marker);
+   }catch(e){}
+  });
+ }
+
+ if(document.getElementById("showBuffers").checked && stops.length){
+  const distance=Number(document.getElementById("bufferDistance").value);
+  const buffers=[];
+  stops.forEach(f=>{
+   try{
+    if(f.geometry.type==="Point"){
+     buffers.push(turf.buffer(f,distance/1000,{units:"kilometers",steps:16}));
     }
-
-    const center=turf.centerOfMass(feature);
-    return selectedEAs.some(poly=>
-      turf.booleanPointInPolygon(center,poly)
-    );
-  }catch(e){
-    return false;
-  }
-}
-
-function filtered(data){
-  return data.features.filter(pointInSelectedArea);
-}
-
-function filteredRoads(data){
-  return data.features.filter(feature=>{
-    if(selectedArea==="ALL")return true;
-    try{
-      const center=turf.centerOfMass(feature);
-      return selectedEAs.some(poly=>
-        turf.booleanPointInPolygon(center,poly)
-      );
-    }catch(e){return false;}
+   }catch(e){}
   });
+  lastBufferFeatures=buffers;
+  if(buffers.length){
+   L.geoJSON(makeCollection(buffers),{
+    style:{color:"#29d4c8",weight:1,fillColor:"#29d4c8",fillOpacity:.12}
+   }).addTo(layers.buffers);
+  }
+ }else{
+  lastBufferFeatures=[];
+ }
+
+ document.getElementById("mapSummary").textContent=
+  stops.length+" stops • "+routes.length+" routes • "+eas.length+" EAs";
 }
 
-/* ==========================================================
-   MAP RENDERING
-========================================================== */
+// ======================================================
+// 9. ROAD AND TRANSPORT ANALYTICS
+// ======================================================
 
-function refreshMap(){
-  majorLayer.clearLayers();
-  minorLayer.clearLayers();
-  stopsLayer.clearLayers();
-  routesLayer.clearLayers();
-  buffersLayer.clearLayers();
-
-  if($("showMajor").checked){
-    majorLayer.addData({
-      type:"FeatureCollection",
-      features:filteredRoads(majorData)
-    });
-  }
-
-  if($("showMinor").checked){
-    minorLayer.addData({
-      type:"FeatureCollection",
-      features:filteredRoads(minorData)
-    });
-  }
-
-  if($("showEA").checked){
-    if(!map.hasLayer(eaLayer))eaLayer.addTo(map);
-  }else if(map.hasLayer(eaLayer)){
-    map.removeLayer(eaLayer);
-  }
-
-  if($("showStops").checked){
-    filtered(stopData).forEach(f=>{
-      if(f.geometry.type!=="Point")return;
-      const c=f.geometry.coordinates;
-      const p=f.properties||{};
-
-      L.circleMarker([c[1],c[0]],{
-        radius:5,color:"#083445",weight:1,
-        fillColor:"#35c6e8",fillOpacity:.95
-      }).bindPopup(
-        `<b>${escapeHTML(p.name||"Transport stop")}</b><br>`+
-        `Type: ${escapeHTML(p.highway||p.public_transport||"Not specified")}<br>`+
-        `OSM ID: ${escapeHTML(p.osm_id||"Not supplied")}`
-      ).addTo(stopsLayer);
-    });
-  }
-
-  if($("showRoutes").checked){
-    filtered(routeData).forEach(f=>{
-      L.geoJSON(f,{
-        style:{color:"#d87538",weight:3,opacity:.9}
-      }).bindPopup(
-        `<b>${escapeHTML(f.properties?.name||"Mapped transport route")}</b>`
-      ).addTo(routesLayer);
-    });
-  }
-
-  if($("showBuffers").checked){
-    if(!map.hasLayer(buffersLayer))buffersLayer.addTo(map);
-    const distance=Number($("bufferDistance").value)/1000;
-
-    filtered(stopData).forEach(f=>{
-      if(f.geometry.type!=="Point")return;
-      try{
-        const buffer=turf.buffer(f,distance,{units:"kilometers"});
-        L.geoJSON(buffer,{
-          style:{
-            color:"#39c58a",weight:1,
-            fillColor:"#39c58a",fillOpacity:.10
-          }
-        }).addTo(buffersLayer);
-      }catch(e){}
-    });
-  }else if(map.hasLayer(buffersLayer)){
-    map.removeLayer(buffersLayer);
-  }
-
-  if(selectedArea!=="ALL"){
-    if(!map.hasLayer(selectedLayer))selectedLayer.addTo(map);
-  }else if(map.hasLayer(selectedLayer)){
-    map.removeLayer(selectedLayer);
-  }
-
-  $("mapStatus").textContent=
-    `${filtered(stopData).length} stops • ${filtered(routeData).length} transport routes`;
-}
-
-/* ==========================================================
-   LENGTH AND AREA STATISTICS
-========================================================== */
-
-function lineLength(data){
-  let total=0;
-  data.forEach(f=>{
-    try{
-      total+=turf.length(f,{units:"kilometers"});
-    }catch(e){}
-  });
-  return total;
+function totalLength(features){
+ let total=0;
+ features.forEach(f=>{
+  try{
+   total+=turf.length(f,{units:"kilometers"});
+  }catch(e){}
+ });
+ return total;
 }
 
 function areaKm2(features){
-  let area=0;
-  features.forEach(f=>{
-    try{area+=turf.area(f)/1000000;}catch(e){}
-  });
-  return area;
+ let total=0;
+ features.forEach(f=>{
+  try{total+=turf.area(f)/1000000;}catch(e){}
+ });
+ return total;
+}
+
+function populationTotal(features){
+ let sum=0,found=false;
+ features.forEach(f=>{
+  const p=getNumber(getProperties(f),["sum_pop","population","pop","total_population","pop_total"]);
+  if(p!==null){sum+=p;found=true;}
+ });
+ return found?sum:null;
+}
+
+function countStopCategories(stops){
+ const categories={};
+ stops.forEach(f=>{
+  const p=getProperties(f);
+  const category=getValue(p,[
+   "category","type","stop_type","amenity","name","operator"
+  ])||"Unclassified";
+  categories[category]=(categories[category]||0)+1;
+ });
+ return categories;
+}
+
+function calculateProximity(stops,eas){
+ if(!stops.length||!eas.length)return null;
+ const distance=Number(document.getElementById("bufferDistance").value);
+ const buffers=[];
+
+ stops.forEach(s=>{
+  try{
+   if(s.geometry.type==="Point"){
+    buffers.push(turf.buffer(s,distance/1000,{units:"kilometers"}));
+   }
+  }catch(e){}
+ });
+
+ let covered=0;
+ let population=0;
+ let hasPopulation=false;
+
+ eas.forEach(ea=>{
+  try{
+   const centroid=turf.centroid(ea);
+   const isCovered=buffers.some(b=>{
+    try{return turf.booleanPointInPolygon(centroid,b);}
+    catch(e){return false;}
+   });
+   if(isCovered){
+    covered++;
+    const pop=getNumber(getProperties(ea),["sum_pop","population","pop","total_population"]);
+    if(pop!==null){population+=pop;hasPopulation=true;}
+   }
+  }catch(e){}
+ });
+
+ return {
+  total:eas.length,
+  covered,
+  percent:100*covered/eas.length,
+  population:hasPopulation?population:null
+ };
 }
 
 function updateAnalytics(){
-  const major=filteredRoads(majorData);
-  const minor=filteredRoads(minorData);
-  const stops=filtered(stopData);
-  const routes=filtered(routeData);
+ const major=getCurrentData("major");
+ const minor=getCurrentData("minor");
+ const stops=getCurrentData("stops");
+ const routes=getCurrentData("routes");
+ const eas=selectedEA;
 
-  const majorLength=lineLength(major);
-  const minorLength=lineLength(minor);
+ const majorLength=totalLength(major);
+ const minorLength=totalLength(minor);
+ const majorAll=totalLength(collection(DATA.major));
+ const minorAll=totalLength(collection(DATA.minor));
 
-  $("kStops").textContent=stops.length.toLocaleString();
-  $("kRoutes").textContent=routes.length.toLocaleString();
-  $("kMajor").textContent=number(majorLength,1)+" km";
-  $("kMinor").textContent=number(minorLength,1)+" km";
+ const area=areaKm2(eas);
+ const pop=populationTotal(eas);
 
-  $("eaCount").textContent=selectedEAs.length.toLocaleString();
-  $("areaStops").textContent=stops.length.toLocaleString();
-  $("areaRoutes").textContent=routes.length.toLocaleString();
-  $("areaMajor").textContent=number(majorLength,1)+" km";
-  $("areaMinor").textContent=number(minorLength,1)+" km";
+ document.getElementById("kStops").textContent=stops.length.toLocaleString();
+ document.getElementById("kRoutes").textContent=routes.length.toLocaleString();
+ document.getElementById("kMajor").textContent=fmt(majorLength,1)+" km";
+ document.getElementById("kMinor").textContent=fmt(minorLength,1)+" km";
 
-  const size=areaKm2(selectedEAs);
-  $("eaArea").textContent=size>0?number(size,2)+" km²":"—";
+ document.getElementById("sEA").textContent=eas.length.toLocaleString();
+ document.getElementById("sStops").textContent=stops.length.toLocaleString();
+ document.getElementById("sRoutes").textContent=routes.length.toLocaleString();
+ document.getElementById("sMajor").textContent=fmt(majorLength,1)+" km";
+ document.getElementById("sMinor").textContent=fmt(minorLength,1)+" km";
+ document.getElementById("sAreaKm").textContent=fmt(area,2)+" km²";
+ document.getElementById("sPopulation").textContent=pop===null?"Not available":fmt(pop,0);
 
-  drawRoadChart(majorLength,minorLength);
-  drawStopChart(stops);
+ document.getElementById("frequencyStatus").textContent=
+  routes.length?"Route geometry only":"Unavailable";
+ document.getElementById("routeStatus").textContent=
+  routes.length?"Mapped geometry":"Unavailable";
+
+ let proximity=calculateProximity(stops,eas);
+
+ if(proximity){
+  document.getElementById("proximityStatus").textContent=
+   fmt(proximity.covered,0)+" / "+proximity.total+" EA centroids";
+  document.getElementById("populationStatus").textContent=
+   proximity.population===null?"Not available":fmt(proximity.population,0)+" (proxy)";
+ }else{
+  document.getElementById("proximityStatus").textContent="Not modelled";
+  document.getElementById("populationStatus").textContent="Not calculated";
+ }
+
+ updateCharts(majorLength,minorLength,stops);
+ updateSelectionLabel();
+
+ document.getElementById("mapSummary").textContent=
+  stops.length+" stops • "+routes.length+" transport routes";
 }
 
-/* ==========================================================
-   CHARTS
-========================================================== */
+// ======================================================
+// 10. CHARTS
+// ======================================================
 
-function drawRoadChart(major,minor){
-  if(roadChart)roadChart.destroy();
+Chart.defaults.color="#aabbd0";
+Chart.defaults.font.family="Inter, Arial";
 
-  roadChart=new Chart($("roadChart"),{
-    type:"bar",
-    data:{
-      labels:["Major roads","Minor roads"],
-      datasets:[{
-        label:"Road length (km)",
-        data:[major,minor],
-        backgroundColor:["#e7a33e","#e5d16a"],
-        borderRadius:4
-      }]
-    },
-    options:{
-      responsive:true,maintainAspectRatio:false,
-      plugins:{
-        legend:{display:false}
-      },
-      scales:{
-        x:{ticks:{color:"#aebfd0"},grid:{display:false}},
-        y:{beginAtZero:true,ticks:{color:"#aebfd0"},grid:{color:"#293c50"}}
-      }
-    }
-  });
+function updateCharts(major,minor,stops){
+ if(roadChart)roadChart.destroy();
+ roadChart=new Chart(document.getElementById("roadChart"),{
+  type:"bar",
+  data:{
+   labels:["Major roads","Minor roads"],
+   datasets:[{
+    label:"Road length (km)",
+    data:[major,minor],
+    backgroundColor:["#36a6ff","#f2a94a"],
+    borderRadius:5
+   }]
+  },
+  options:{
+   responsive:true,maintainAspectRatio:false,
+   plugins:{legend:{display:false}},
+   scales:{
+    x:{grid:{display:false}},
+    y:{beginAtZero:true,grid:{color:"#344258"}}
+   }
+  }
+ });
+
+ if(stopChart)stopChart.destroy();
+ const categories=countStopCategories(stops);
+ const labels=Object.keys(categories);
+ const values=Object.values(categories);
+
+ stopChart=new Chart(document.getElementById("stopChart"),{
+  type:"doughnut",
+  data:{
+   labels:labels.length?labels:["No stop data"],
+   datasets:[{
+    data:values.length?values:[1],
+    backgroundColor:["#36a6ff","#29d4c8","#f2a94a","#c36fe0","#62c77f","#ee6a6a","#8296ad"],
+    borderColor:"#17253a",
+    borderWidth:2
+   }]
+  },
+  options:{
+   responsive:true,maintainAspectRatio:false,
+   plugins:{legend:{position:"bottom",labels:{boxWidth:10,font:{size:9}}}}
+  }
+ });
 }
 
-function drawStopChart(stops){
-  const counts={};
+// ======================================================
+// 11. DATA QUALITY
+// ======================================================
 
-  stops.forEach(f=>{
-    const p=f.properties||{};
-    let category="Other";
+function updateDataQuality(){
+ const features={
+  major:collection(DATA.major),
+  minor:collection(DATA.minor),
+  ea:collection(DATA.ea),
+  stops:collection(DATA.stops),
+  routes:collection(DATA.routes)
+ };
 
-    if(p.highway==="bus_stop")category="Bus stops";
-    else if(p.public_transport==="platform")category="Platforms";
-    else if(p.public_transport==="stop_position")category="Stop positions";
-    else if(p.railway==="station")category="Rail stations";
-    else if(p.amenity==="bus_station")category="Bus stations";
-    else if(p.ferry==="terminal")category="Ferry terminals";
+ const rows=Object.entries(features).map(([k,v])=>
+  "<b>"+k.toUpperCase()+":</b> "+v.length.toLocaleString()+" features"
+ );
 
-    counts[category]=(counts[category]||0)+1;
-  });
+ const total=Object.values(features).reduce((a,b)=>a+b.length,0);
+ const msg=rows.join("<br>")+"<br><br><b>Total retrieved:</b> "+total.toLocaleString()+
+  "<br><b>Transport stops:</b> "+(DATA.stops?"Dataset available":"Not available")+
+  "<br><b>Transport routes:</b> "+(DATA.routes?"Dataset available":"Not available");
 
-  if(stopChart)stopChart.destroy();
-
-  stopChart=new Chart($("stopChart"),{
-    type:"doughnut",
-    data:{
-      labels:Object.keys(counts).length?Object.keys(counts):["No stop data"],
-      datasets:[{
-        data:Object.values(counts).length?Object.values(counts):[1],
-        backgroundColor:[
-          "#35c6e8","#4389ed","#39c58a",
-          "#f5a442","#a98bea","#e879a7"
-        ],
-        borderColor:"#101d2e",borderWidth:2
-      }]
-    },
-    options:{
-      responsive:true,maintainAspectRatio:false,
-      plugins:{
-        legend:{
-          position:"bottom",
-          labels:{color:"#b9c8d8",font:{size:9},boxWidth:9,padding:10}
-        }
-      }
-    }
-  });
+ document.getElementById("dataQuality").innerHTML=msg;
 }
 
-/* ==========================================================
-   EXPORTS
-========================================================== */
+// ======================================================
+// 12. DATA EXPORTS
+// ======================================================
 
-function downloadFile(content,name,type){
-  const blob=new Blob([content],{type});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement("a");
-  a.href=url;a.download=name;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
+function exportGeoJSON(key){
+ let features=[];
+ if(key==="ea")features=selectedEA;
+ else features=getCurrentData(key);
+
+ if(!features.length){
+  alert("No "+key+" features available for export.");
+  return;
+ }
+
+ downloadFile(
+  "Gambia_"+key+"_selected.geojson",
+  JSON.stringify(makeCollection(features),null,2),
+  "application/geo+json"
+ );
 }
 
 function exportStopsCSV(){
-  const features=filtered(stopData);
-  if(!features.length){
-    alert("No transport stops are currently loaded.");
-    return;
-  }
+ const features=getCurrentData("stops");
+ if(!features.length){
+  alert("No transport stops available.");
+  return;
+ }
 
-  const rows=features.filter(f=>f.geometry.type==="Point").map(f=>{
-    const p=f.properties||{};
-    const c=f.geometry.coordinates;
-    return {
-      name:p.name||"",
-      category:p.highway||p.public_transport||p.railway||"",
-      operator:p.operator||"",
-      osm_id:p.osm_id||"",
-      longitude:c[0],
-      latitude:c[1]
-    };
-  });
+ const rows=features.map(f=>{
+  const p=getProperties(f);
+  const c=f.geometry?.coordinates||[];
+  return {
+   ...p,
+   longitude:c[0]??"",
+   latitude:c[1]??""
+  };
+ });
 
-  const keys=Object.keys(rows[0]);
-  const csv=[
-    keys.join(","),
-    ...rows.map(row=>keys.map(k=>
-      `"${String(row[k]??"").replace(/"/g,'""')}"`
-    ).join(","))
-  ].join("\n");
+ const headers=[...new Set(rows.flatMap(r=>Object.keys(r)))];
+ const csv=[
+  headers.join(","),
+  ...rows.map(r=>headers.map(h=>{
+   const v=r[h]??"";
+   return '"'+String(v).replace(/"/g,'""')+'"';
+  }).join(","))
+ ].join("\n");
 
-  downloadFile(csv,"Gambia_Transport_Stops.csv","text/csv");
+ downloadFile("Gambia_transport_stops.csv",csv,"text/csv;charset=utf-8");
 }
 
-function exportStopsGeoJSON(){
-  const features=filtered(stopData);
-  if(!features.length){alert("No stop data available.");return;}
-  downloadFile(JSON.stringify({
-    type:"FeatureCollection",features
-  },null,2),"Gambia_Transport_Stops.geojson","application/geo+json");
-}
+// ======================================================
+// 13. USER INTERFACE EVENTS
+// ======================================================
 
-function exportRoutes(){
-  const features=filtered(routeData);
-  if(!features.length){alert("No transport routes available.");return;}
-  downloadFile(JSON.stringify({
-    type:"FeatureCollection",features
-  },null,2),"Gambia_Transport_Routes.geojson","application/geo+json");
-}
+["showMajor","showMinor","showStops","showRoutes","showBuffers","showEA"]
+ .forEach(id=>{
+  document.getElementById(id).addEventListener("change",renderLayers);
+ });
 
-function exportRoads(){
-  const features=[
-    ...filteredRoads(majorData).map(f=>({
-      ...f,properties:{...f.properties,network_class:"Major road"}
-    })),
-    ...filteredRoads(minorData).map(f=>({
-      ...f,properties:{...f.properties,network_class:"Minor road"}
-    }))
-  ];
-  if(!features.length){alert("No road features available.");return;}
-  downloadFile(JSON.stringify({
-    type:"FeatureCollection",features
-  },null,2),"Gambia_Road_Network.geojson","application/geo+json");
-}
+document.getElementById("bufferDistance").addEventListener("change",()=>{
+ renderLayers();
+ updateAnalytics();
+});
 
-function exportFilteredEAs(){
-  if(!selectedEAs.length){alert("No EA polygons available.");return;}
-  downloadFile(JSON.stringify({
-    type:"FeatureCollection",features:selectedEAs
-  },null,2),"Gambia_Selected_Enumeration_Areas.geojson","application/geo+json");
-}
+document.getElementById("repo").addEventListener("change",()=>{
+ log("Repository configuration changed.");
+});
 
-/* ==========================================================
-   INITIALISE
-========================================================== */
+document.getElementById("branch").addEventListener("change",()=>{
+ log("Repository branch changed.");
+});
 
-window.addEventListener("resize",()=>map.invalidateSize());
+// ======================================================
+// 14. INITIAL APPLICATION STATE
+// ======================================================
 
-loadAllData();
-
+initialiseAdminFields();
+updateDataQuality();
+updateCharts(0,0,[]);
+updateSelectionLabel();
+status("READY","#38c98c");
+log("Public Transport Quality Intelligence initialised.");
+log("Select LOAD ALL DATA to connect to GitHub.");
 </script>
 </body>
 </html>
-
