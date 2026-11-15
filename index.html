@@ -1,0 +1,1223 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>GBoS GEOAI | Public Transport Quality in The Gambia</title>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+<style>
+:root{
+ --bg:#08121e;
+ --panel:#101e2d;
+ --panel2:#16283a;
+ --border:#293e52;
+ --text:#e9f1f8;
+ --muted:#91a6b9;
+ --cyan:#42c5d8;
+ --blue:#438de0;
+ --orange:#efa34e;
+ --green:#54c69b;
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text)}
+body{overflow:hidden}
+header{
+ height:66px;background:#0b1826;border-bottom:1px solid var(--border);
+ display:flex;align-items:center;justify-content:space-between;padding:0 20px;
+}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{
+ width:40px;height:40px;background:#123a4c;color:var(--cyan);
+ display:grid;place-items:center;border-radius:9px;font-size:19px;
+}
+h1{font-size:15px;margin:0;font-weight:800;letter-spacing:.4px}
+.subtitle{font-size:10px;color:var(--muted);margin-top:5px}
+.header-status{
+ border:1px solid var(--border);padding:7px 11px;border-radius:20px;
+ color:var(--muted);font-size:10px;
+}
+main{
+ height:calc(100% - 66px);
+ display:grid;
+ grid-template-columns:minmax(255px,1fr) minmax(400px,1fr) minmax(255px,1fr);
+ gap:10px;padding:10px;min-height:0;
+}
+.panel{
+ min-height:0;overflow-y:auto;background:var(--panel);
+ border:1px solid var(--border);border-radius:9px;
+ scrollbar-width:thin;scrollbar-color:#38516a transparent;
+}
+.inner{padding:14px}
+.panel-heading{
+ color:var(--cyan);font-size:11px;font-weight:800;
+ letter-spacing:1.1px;margin:3px 0 15px;
+}
+.section{padding:13px 0;border-top:1px solid var(--border)}
+.section:first-of-type{border-top:0;padding-top:0}
+.section h3{font-size:12px;margin:0 0 10px}
+label{display:block;font-size:10px;color:var(--muted);margin:10px 0 5px}
+select,input[type=file]{
+ width:100%;background:#091725;color:var(--text);
+ border:1px solid #344a5f;border-radius:6px;
+ padding:9px;font-size:11px;outline:none;
+}
+input[type=file]{padding:7px}
+button{
+ cursor:pointer;border:0;border-radius:6px;padding:10px 11px;
+ background:var(--cyan);color:#06141d;font-weight:800;font-size:10px;
+}
+button.secondary{background:#21374b;color:var(--text);border:1px solid #38526b}
+button:disabled{opacity:.5;cursor:not-allowed}
+.actions{display:flex;gap:7px;margin-top:10px}
+.actions button{flex:1}
+.checkline{
+ display:flex;align-items:center;gap:8px;color:var(--muted);
+ font-size:10px;margin:10px 0;
+}
+.checkline input{accent-color:var(--cyan)}
+.notice,.info{
+ padding:10px;border-radius:6px;font-size:10px;line-height:1.55;
+}
+.notice{background:#382a1a;border:1px solid #74532e;color:#f4d7ad}
+.info{background:#102d3b;border:1px solid #285366;color:#b8e5ed}
+.small{font-size:10px;color:var(--muted);line-height:1.6}
+#map{height:100%;width:100%;background:#d8e0e5}
+.map-panel{position:relative;overflow:hidden;min-height:0}
+.map-top{
+ position:absolute;z-index:700;top:12px;left:12px;right:12px;
+ display:flex;justify-content:space-between;gap:8px;pointer-events:none;
+}
+.map-chip{
+ background:#0a1928ed;border:1px solid #3a5065;
+ color:#e7f1f8;padding:8px 10px;border-radius:6px;font-size:10px;
+}
+.map-bottom{
+ position:absolute;z-index:700;bottom:12px;left:12px;
+ background:#0a1928ed;border:1px solid #3a5065;
+ border-radius:7px;padding:10px;font-size:10px;line-height:1.8;
+}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:7px}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.kpi{background:var(--panel2);border:1px solid var(--border);padding:11px;border-radius:7px}
+.kpi-name{font-size:9px;color:var(--muted)}
+.kpi-value{font-size:21px;font-weight:800;margin:6px 0}
+.kpi-note{font-size:9px;color:#71899e}
+.metric{
+ display:flex;justify-content:space-between;gap:8px;
+ padding:8px 0;border-bottom:1px solid #25394b;font-size:10px;
+}
+.metric span{color:var(--muted)}
+.metric strong{text-align:right}
+#chart{height:185px;width:100%}
+footer{font-size:9px;color:#748ba0;line-height:1.7;margin-top:15px}
+.leaflet-container{font-family:Inter,Arial,sans-serif}
+.leaflet-control-attribution{font-size:9px!important}
+.leaflet-popup-content{font-size:11px;line-height:1.6}
+.leaflet-control-layers{
+ border:1px solid #42586b!important;border-radius:7px!important;
+}
+#mapMessage{
+ position:absolute;z-index:800;top:55px;left:12px;
+ background:#0a1928ed;color:#dbeaf5;border:1px solid #3a5065;
+ padding:7px 10px;border-radius:5px;font-size:10px;
+ max-width:260px;display:none;
+}
+@media(max-width:900px){
+ body{overflow:auto}
+ header{height:auto;min-height:66px}
+ main{height:auto;display:flex;flex-direction:column}
+ .panel{min-height:280px;max-height:440px}
+ .map-panel{height:65vh;min-height:430px;order:-1}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+ <div class="brand">
+  <div class="logo"><i class="fa-solid fa-bus"></i></div>
+  <div>
+   <h1>PUBLIC TRANSPORT QUALITY | THE GAMBIA</h1>
+   <div class="subtitle">GBoS GEOAI · Transport access · Spatial distribution · Connectivity</div>
+  </div>
+ </div>
+ <div class="header-status" id="status">READY · AWAITING DATA</div>
+</header>
+
+<main>
+
+<!-- LEFT PANEL -->
+<section class="panel">
+ <div class="inner">
+  <div class="panel-heading">01 / CONTROL CENTRE</div>
+
+  <div class="section">
+   <h3>National transport data</h3>
+   <div class="notice">
+    Preliminary OpenStreetMap assessment. Mapped transport features do not
+    confirm active operations, service frequency or published timetables.
+   </div>
+   <div class="actions">
+    <button id="loadBtn" onclick="loadNationalData()">
+     <i class="fa-solid fa-download"></i> LOAD NATIONAL DATA
+    </button>
+    <button class="secondary" onclick="resetDashboard()">RESET</button>
+   </div>
+   <p class="small" id="loadMessage">Transport data has not yet been retrieved.</p>
+  </div>
+
+  <div class="section">
+   <h3>Administrative boundaries</h3>
+   <label>Upload administrative GeoJSON</label>
+   <input type="file" id="boundaryFile" accept=".geojson,.json,application/geo+json,application/json">
+   <p class="small">Upload a Gambia LGA, district or ward GeoJSON FeatureCollection to enable area selection.</p>
+
+   <label>Boundary layer</label>
+   <select id="boundaryLevel" onchange="updateAreaOptions()">
+    <option value="">Select boundary layer</option>
+    <option value="lga">LGA boundaries</option>
+    <option value="district">District boundaries</option>
+    <option value="ward">Ward boundaries</option>
+   </select>
+
+   <label>Selected area</label>
+   <select id="areaSelect" onchange="selectArea()">
+    <option value="">All of The Gambia</option>
+   </select>
+   <div class="small" id="boundaryStatus">No boundary file uploaded.</div>
+  </div>
+
+  <div class="section">
+   <h3>Map layer configuration</h3>
+   <label class="checkline"><input type="checkbox" id="stopsToggle" checked onchange="refreshLayers()"> Transport stops and stations</label>
+   <label class="checkline"><input type="checkbox" id="routesToggle" checked onchange="refreshLayers()"> Mapped route segments</label>
+   <label class="checkline"><input type="checkbox" id="bufferToggle" onchange="refreshLayers()"> 500 m proximity buffers</label>
+   <label class="checkline"><input type="checkbox" id="boundaryToggle" checked onchange="refreshLayers()"> Administrative boundaries</label>
+  </div>
+
+  <div class="section">
+   <h3>Basemap switcher</h3>
+   <label for="basemap">Choose map background</label>
+   <select id="basemap" onchange="changeBasemap()">
+    <option value="street" selected>Street map · OpenStreetMap</option>
+    <option value="satellite">Satellite · Esri World Imagery</option>
+    <option value="hybrid">Hybrid · Satellite and labels</option>
+    <option value="terrain">Terrain · OpenTopoMap</option>
+    <option value="light">Light canvas · Carto</option>
+    <option value="dark">Dark canvas · Carto</option>
+   </select>
+   <div class="small" id="basemapStatus">Street map selected.</div>
+  </div>
+
+  <div class="section">
+   <h3>Data exports</h3>
+   <div class="actions">
+    <button class="secondary" onclick="exportStops()">EXPORT STOPS CSV</button>
+    <button class="secondary" onclick="exportGeoJSON()">EXPORT GEOJSON</button>
+   </div>
+  </div>
+
+  <footer>
+   Data source: OpenStreetMap contributors.<br>
+   Boundary data must be supplied from a verified administrative dataset.
+  </footer>
+ </div>
+</section>
+
+<!-- MAP -->
+<section class="panel map-panel">
+ <div id="map"></div>
+ <div class="map-top">
+  <div class="map-chip"><i class="fa-solid fa-earth-africa"></i> THE GAMBIA · NATIONAL VIEW</div>
+  <div class="map-chip" id="mapCount">0 STOPS · 0 ROUTE FEATURES</div>
+ </div>
+ <div id="mapMessage"></div>
+ <div class="map-bottom">
+  <div><span class="dot" style="background:#42c5d8"></span>Transport stop</div>
+  <div><span class="dot" style="background:#efa34e"></span>Route segment</div>
+  <div><span class="dot" style="background:#a0aab5"></span>500 m proximity buffer</div>
+  <div><span class="dot" style="background:#f2d18c"></span>Administrative boundary</div>
+ </div>
+</section>
+
+<!-- RIGHT PANEL -->
+<section class="panel">
+ <div class="inner">
+  <div class="panel-heading">02 / TRANSPORT ANALYTICS</div>
+
+  <div class="section">
+   <h3>National overview</h3>
+   <div class="kpis">
+    <div class="kpi">
+     <div class="kpi-name">MAPPED STOPS</div>
+     <div class="kpi-value" id="stopKpi">—</div>
+     <div class="kpi-note">OSM point features</div>
+    </div>
+    <div class="kpi">
+     <div class="kpi-name">ROUTE SEGMENTS</div>
+     <div class="kpi-value" id="routeKpi">—</div>
+     <div class="kpi-note">OSM member ways</div>
+    </div>
+    <div class="kpi">
+     <div class="kpi-name">STOP CATEGORIES</div>
+     <div class="kpi-value" id="typeKpi">—</div>
+     <div class="kpi-note">Distinct OSM tags</div>
+    </div>
+    <div class="kpi">
+     <div class="kpi-name">TIMETABLE DATA</div>
+     <div class="kpi-value" style="font-size:15px;color:var(--orange)">UNAVAILABLE</div>
+     <div class="kpi-note">No verified GTFS connected</div>
+    </div>
+   </div>
+  </div>
+
+  <div class="section">
+   <h3>Selected area statistics</h3>
+   <div class="metric"><span>Geographic area</span><strong id="selectedName">National</strong></div>
+   <div class="metric"><span>Mapped stops</span><strong id="areaStops">—</strong></div>
+   <div class="metric"><span>Mapped route segments</span><strong id="areaRoutes">—</strong></div>
+   <div class="metric"><span>Stops per 100 km²</span><strong id="density">—</strong></div>
+   <p class="small">Stop density is a spatial indicator and does not measure service frequency, actual passenger access or transport reliability.</p>
+  </div>
+
+  <div class="section">
+   <h3>Mapped stop categories</h3>
+   <div style="height:185px"><canvas id="chart"></canvas></div>
+   <p class="small">Counts are based on the tags available in the retrieved OSM features.</p>
+  </div>
+
+  <div class="section">
+   <h3>Public transport quality assessment</h3>
+   <div class="info">
+    <strong>Frequency-based service classes: NOT CALCULATED</strong><br>
+    Verified scheduled timetables are required before assigning service-frequency grades.
+   </div>
+   <div class="metric"><span>Scheduled headway</span><strong>Unavailable</strong></div>
+   <div class="metric"><span>Population coverage</span><strong>Not calculated</strong></div>
+   <div class="metric"><span>Service reliability</span><strong>Not assessed</strong></div>
+   <div class="metric"><span>Fare affordability</span><strong>Not assessed</strong></div>
+  </div>
+
+  <div class="section">
+   <h3>Methodology</h3>
+   <p class="small">
+    1. Retrieve OSM bus stops, platforms, stop positions, railway stations and route relations within the national bounding box.<br><br>
+    2. Display mapped stop locations and route-member ways.<br><br>
+    3. Generate optional 500 m straight-line buffers around mapped stops.<br><br>
+    4. Summarise features within a selected administrative polygon when a boundary file is uploaded.<br><br>
+    5. Calculate mapped-stop density per 100 km² where the selected area geometry is available.<br><br>
+    Proximity buffers do not represent pedestrian-network distance or actual service availability.
+   </p>
+  </div>
+
+  <footer>
+   Produced by Ansu Singhateh | GIS / Cartography Unit | Gambia Bureau of Statistics<br>
+   GBoS GEOAI • Research and educational use
+  </footer>
+ </div>
+</section>
+
+</main>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@turf/turf@7.2.0/turf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+<script>
+"use strict";
+
+/* ==========================================================
+   CONFIGURATION
+========================================================== */
+
+const GAMBIA_BOUNDS = [
+ [13.0646,-16.8174],
+ [13.8269,-13.7909]
+];
+
+const GAMBIA_BBOX = [13.0646,-16.8174,13.8269,-13.7909];
+
+const OVERPASS_ENDPOINTS = [
+ "https://overpass-api.de/api/interpreter",
+ "https://overpass.kumi.systems/api/interpreter"
+];
+
+let map = null;
+let baseLayer = null;
+let hybridLabels = null;
+
+let stopLayer = null;
+let routeLayer = null;
+let bufferLayer = null;
+let boundaryLayer = null;
+
+let stopFeatures = [];
+let routeFeatures = [];
+let boundaryData = null;
+let selectedFeature = null;
+let chartInstance = null;
+
+/* ==========================================================
+   GENERAL UTILITIES
+========================================================== */
+
+const $ = id => document.getElementById(id);
+
+function escapeHTML(value){
+ return String(value ?? "").replace(/[&<>"']/g,c=>({
+  "&":"&amp;",
+  "<":"&lt;",
+  ">":"&gt;",
+  '"':"&quot;",
+  "'":"&#39;"
+ }[c]));
+}
+
+function setStatus(message){
+ $("status").textContent = message;
+}
+
+function showMapMessage(message){
+ const box = $("mapMessage");
+ box.textContent = message;
+ box.style.display = "block";
+}
+
+function hideMapMessage(){
+ $("mapMessage").style.display = "none";
+}
+
+/* ==========================================================
+   MAP INITIALISATION
+========================================================== */
+
+function initMap(){
+
+ map = L.map("map",{
+  zoomControl:true,
+  preferCanvas:true,
+  attributionControl:true
+ }).setView([13.45,-15.55],8);
+
+ // Initialize the basemap before adding thematic layers.
+ changeBasemap();
+
+ stopLayer = L.layerGroup().addTo(map);
+ routeLayer = L.layerGroup().addTo(map);
+ bufferLayer = L.layerGroup();
+
+ boundaryLayer = L.geoJSON(null,{
+  style:{
+   color:"#f2d18c",
+   weight:1.5,
+   opacity:.95,
+   fillColor:"#d9bd7a",
+   fillOpacity:.035
+  },
+  onEachFeature:function(feature,layer){
+   const name = getAreaName(feature.properties || {});
+   layer.bindPopup("<b>"+escapeHTML(name)+"</b>");
+  }
+ }).addTo(map);
+
+ map.fitBounds(GAMBIA_BOUNDS);
+
+ setTimeout(function(){
+  map.invalidateSize();
+ },300);
+}
+
+/* ==========================================================
+   BASEMAP SWITCHER
+========================================================== */
+
+function changeBasemap(){
+
+ if(!map) return;
+
+ const selected = $("basemap").value;
+
+ const basemaps = {
+
+  street:{
+   url:"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+   attribution:"© OpenStreetMap contributors",
+   maxZoom:19
+  },
+
+  satellite:{
+   url:"https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+   attribution:"Tiles © Esri",
+   maxZoom:19
+  },
+
+  terrain:{
+   url:"https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+   attribution:"© OpenTopoMap contributors",
+   maxZoom:17
+  },
+
+  light:{
+   url:"https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+   attribution:"© OpenStreetMap © CARTO",
+   maxZoom:20
+  },
+
+  dark:{
+   url:"https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+   attribution:"© OpenStreetMap © CARTO",
+   maxZoom:20
+  }
+
+ };
+
+ const config = basemaps[selected] || basemaps.street;
+
+ // Remove the previous background.
+ if(baseLayer){
+  map.removeLayer(baseLayer);
+  baseLayer = null;
+ }
+
+ // Remove old hybrid labels.
+ if(hybridLabels){
+  map.removeLayer(hybridLabels);
+  hybridLabels = null;
+ }
+
+ baseLayer = L.tileLayer(config.url,{
+  attribution:config.attribution,
+  maxZoom:config.maxZoom,
+  subdomains:"abc",
+  updateWhenIdle:true,
+  keepBuffer:3
+ });
+
+ baseLayer.on("tileerror",function(){
+  $("basemapStatus").textContent =
+   "Tile loading issue. Try another basemap.";
+ });
+
+ baseLayer.on("load",function(){
+  $("basemapStatus").textContent =
+   "Basemap active: "+selected.toUpperCase();
+ });
+
+ baseLayer.addTo(map);
+ baseLayer.setZIndex(1);
+
+ // Hybrid imagery = satellite imagery plus transparent labels.
+ if(selected==="hybrid"){
+
+  const satellite = L.tileLayer(
+   "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+   {
+    attribution:"Imagery © Esri",
+    maxZoom:19
+   }
+  );
+
+  map.removeLayer(baseLayer);
+  baseLayer = satellite.addTo(map);
+  baseLayer.setZIndex(1);
+
+  hybridLabels = L.tileLayer(
+   "https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png",
+   {
+    attribution:"Labels © CARTO",
+    maxZoom:20,
+    subdomains:"abc",
+    pane:"overlayPane"
+   }
+  ).addTo(map);
+
+  hybridLabels.setZIndex(300);
+
+  $("basemapStatus").textContent =
+   "Hybrid satellite imagery and labels selected.";
+ }
+
+ setTimeout(function(){
+  map.invalidateSize();
+ },150);
+}
+
+/* ==========================================================
+   ADMINISTRATIVE GEOJSON
+========================================================== */
+
+function getAreaName(properties){
+
+ return properties.NAME_1 ||
+        properties.NAME_2 ||
+        properties.NAME_3 ||
+        properties.lganame ||
+        properties.distname ||
+        properties.wardname ||
+        properties.LGA ||
+        properties.DISTRICT ||
+        properties.WARD ||
+        properties.name ||
+        properties.NAME ||
+        properties.admin ||
+        "Unnamed area";
+}
+
+$("boundaryFile").addEventListener("change",function(event){
+
+ const file = event.target.files[0];
+ if(!file) return;
+
+ const reader = new FileReader();
+
+ reader.onload = function(e){
+
+  try{
+
+   const data = JSON.parse(e.target.result);
+
+   if(data.type==="Feature"){
+    boundaryData = {
+     type:"FeatureCollection",
+     features:[data]
+    };
+   }else if(data.type==="FeatureCollection"){
+    boundaryData = data;
+   }else{
+    throw new Error("Expected a GeoJSON Feature or FeatureCollection.");
+   }
+
+   if(!Array.isArray(boundaryData.features)){
+    throw new Error("No GeoJSON features found.");
+   }
+
+   boundaryLayer.clearLayers();
+   boundaryLayer.addData(boundaryData);
+
+   $("boundaryStatus").textContent =
+    boundaryData.features.length+" administrative features loaded.";
+
+   $("boundaryLevel").value="";
+   selectedFeature=null;
+
+   updateAreaOptions();
+
+   if(boundaryData.features.length){
+    map.fitBounds(boundaryLayer.getBounds(),{padding:[20,20]});
+   }
+
+   refreshLayers();
+   updateAnalytics();
+
+  }catch(error){
+   alert("Boundary upload failed: "+error.message);
+  }
+ };
+
+ reader.readAsText(file);
+});
+
+function updateAreaOptions(){
+
+ const select = $("areaSelect");
+ select.innerHTML = '<option value="">All of The Gambia</option>';
+
+ if(!boundaryData) return;
+
+ const names = [...new Set(
+  boundaryData.features.map(f=>getAreaName(f.properties || {}))
+ )].sort();
+
+ names.forEach(name=>{
+  const option=document.createElement("option");
+  option.value=name;
+  option.textContent=name;
+  select.appendChild(option);
+ });
+}
+
+function selectArea(){
+
+ const name=$("areaSelect").value;
+
+ selectedFeature = name && boundaryData
+  ? boundaryData.features.find(
+     f=>getAreaName(f.properties || {})===name
+    )
+  : null;
+
+ if(selectedFeature){
+  const selectedLayer=L.geoJSON(selectedFeature);
+  map.fitBounds(selectedLayer.getBounds(),{padding:[25,25]});
+  $("selectedName").textContent=name;
+ }else{
+  map.fitBounds(GAMBIA_BOUNDS);
+  $("selectedName").textContent="National";
+ }
+
+ refreshLayers();
+ updateAnalytics();
+}
+
+/* ==========================================================
+   OPENSTREETMAP OVERPASS DATA
+========================================================== */
+
+function buildOverpassQuery(){
+
+ const [south,west,north,east]=GAMBIA_BBOX;
+ const bbox=`(${south},${west},${north},${east})`;
+
+ return `
+[out:json][timeout:180];
+(
+ node["highway"="bus_stop"]${bbox};
+ node["public_transport"="platform"]${bbox};
+ node["public_transport"="stop_position"]${bbox};
+ node["railway"="station"]${bbox};
+ node["railway"="halt"]${bbox};
+)->.stops;
+
+(
+ relation["route"~"^(bus|trolleybus|ferry|share_taxi)$"]${bbox};
+)->.routes;
+
+.stops out body;
+.routes out tags;
+way(r.routes);
+out geom;
+`;
+}
+
+async function queryOverpass(){
+
+ const query=buildOverpassQuery();
+ let lastError=null;
+
+ for(const endpoint of OVERPASS_ENDPOINTS){
+
+  try{
+
+   const response=await fetch(endpoint,{
+    method:"POST",
+    headers:{
+     "Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"
+    },
+    body:new URLSearchParams({data:query})
+   });
+
+   if(!response.ok){
+    throw new Error("Overpass HTTP "+response.status);
+   }
+
+   const json=await response.json();
+
+   if(json.remark){
+    throw new Error(json.remark);
+   }
+
+   return json;
+
+  }catch(error){
+   lastError=error;
+  }
+ }
+
+ throw lastError || new Error("No Overpass endpoint responded.");
+}
+
+function classifyStop(tags){
+
+ if(tags.railway==="station" || tags.railway==="halt"){
+  return "Railway";
+ }
+
+ if(tags.public_transport==="platform"){
+  return "Platform";
+ }
+
+ if(tags.public_transport==="stop_position"){
+  return "Stop position";
+ }
+
+ if(tags.highway==="bus_stop"){
+  return "Bus stop";
+ }
+
+ return "Other";
+}
+
+function osmToFeatures(elements){
+
+ const nodes=elements.filter(e=>
+  e.type==="node" &&
+  Number.isFinite(e.lat) &&
+  Number.isFinite(e.lon)
+ );
+
+ const ways=elements.filter(e=>
+  e.type==="way" &&
+  Array.isArray(e.geometry) &&
+  e.geometry.length>1
+ );
+
+ const stops=nodes.map(e=>({
+
+  type:"Feature",
+
+  geometry:{
+   type:"Point",
+   coordinates:[e.lon,e.lat]
+  },
+
+  properties:{
+   osm_id:e.id,
+   name:e.tags?.name || e.tags?.local_name || "Unnamed stop",
+   category:classifyStop(e.tags || {}),
+   tags:e.tags || {}
+  }
+
+ }));
+
+ const routes=ways.map(e=>({
+
+  type:"Feature",
+
+  geometry:{
+   type:"LineString",
+   coordinates:e.geometry.map(p=>[p.lon,p.lat])
+  },
+
+  properties:{
+   osm_id:e.id,
+   name:e.tags?.name || "Unnamed route segment",
+   highway:e.tags?.highway || "",
+   tags:e.tags || {}
+  }
+
+ }));
+
+ return {stops,routes};
+}
+
+/* ==========================================================
+   NATIONAL DATA LOADER
+========================================================== */
+
+async function loadNationalData(){
+
+ const button=$("loadBtn");
+
+ button.disabled=true;
+ $("loadMessage").textContent="Connecting to OpenStreetMap Overpass services...";
+ setStatus("LOADING · OSM DATA");
+ showMapMessage("Retrieving mapped transport stops and routes...");
+
+ try{
+
+  const osm=await queryOverpass();
+
+  const converted=osmToFeatures(osm.elements || []);
+
+  stopFeatures=converted.stops;
+  routeFeatures=converted.routes;
+
+  refreshLayers();
+  updateAnalytics();
+
+  $("loadMessage").textContent=
+   stopFeatures.length.toLocaleString()+" stops and "+
+   routeFeatures.length.toLocaleString()+" route-member ways retrieved. "+
+   "OSM timestamp: "+(osm.osm3s?.timestamp_osm_base || "not supplied");
+
+  setStatus("DATA LOADED · OSM");
+
+  showMapMessage(
+   "Data loaded: "+
+   stopFeatures.length+" stops · "+
+   routeFeatures.length+" route segments."
+  );
+
+  setTimeout(hideMapMessage,5000);
+
+ }catch(error){
+
+  console.error(error);
+
+  $("loadMessage").textContent=
+   "Unable to retrieve data: "+error.message+
+   ". Overpass services may be busy. Please retry.";
+
+  setStatus("DATA RETRIEVAL ERROR");
+
+  showMapMessage("Data retrieval failed. Try again later.");
+
+ }finally{
+
+  button.disabled=false;
+
+ }
+}
+
+/* ==========================================================
+   SELECTED AREA FILTERING
+========================================================== */
+
+function featureInsideSelected(feature){
+
+ if(!selectedFeature) return true;
+
+ try{
+
+  return turf.booleanPointInPolygon(
+   turf.point(feature.geometry.coordinates),
+   selectedFeature
+  );
+
+ }catch(error){
+  return false;
+ }
+}
+
+function lineInsideSelected(feature){
+
+ if(!selectedFeature) return true;
+
+ try{
+
+  const line=turf.lineString(feature.geometry.coordinates);
+  const midpoint=turf.along(line,turf.length(line)/2);
+
+  return turf.booleanPointInPolygon(
+   midpoint,
+   selectedFeature
+  );
+
+ }catch(error){
+  return false;
+ }
+}
+
+/* ==========================================================
+   MAP LAYERS
+========================================================== */
+
+function refreshLayers(){
+
+ if(!map || !stopLayer) return;
+
+ stopLayer.clearLayers();
+ routeLayer.clearLayers();
+ bufferLayer.clearLayers();
+
+ const visibleStops=stopFeatures.filter(featureInsideSelected);
+ const visibleRoutes=routeFeatures.filter(lineInsideSelected);
+
+ if($("stopsToggle").checked){
+
+  visibleStops.forEach(feature=>{
+
+   const [lon,lat]=feature.geometry.coordinates;
+
+   L.circleMarker([lat,lon],{
+    radius:5,
+    color:"#092536",
+    weight:1,
+    fillColor:"#42c5d8",
+    fillOpacity:.95
+   }).bindPopup(
+    "<b>"+escapeHTML(feature.properties.name)+"</b><br>"+
+    "Category: "+escapeHTML(feature.properties.category)+"<br>"+
+    "OSM ID: "+feature.properties.osm_id
+   ).addTo(stopLayer);
+
+  });
+
+ }
+
+ if($("routesToggle").checked){
+
+  visibleRoutes.forEach(feature=>{
+
+   const coords=feature.geometry.coordinates.map(
+    c=>[c[1],c[0]]
+   );
+
+   L.polyline(coords,{
+    color:"#efa34e",
+    weight:2.5,
+    opacity:.85
+   }).bindPopup(
+    "<b>"+escapeHTML(feature.properties.name)+"</b><br>"+
+    "OSM way ID: "+feature.properties.osm_id
+   ).addTo(routeLayer);
+
+  });
+
+ }
+
+ if($("bufferToggle").checked){
+
+  visibleStops.forEach(feature=>{
+
+   const point=turf.point(feature.geometry.coordinates);
+   const buffer=turf.buffer(point,.5,{units:"kilometers"});
+
+   if(buffer){
+
+    L.geoJSON(buffer,{
+     style:{
+      color:"#9baab8",
+      weight:.7,
+      fillColor:"#9baab8",
+      fillOpacity:.10
+     }
+    }).addTo(bufferLayer);
+
+   }
+
+  });
+
+  if(!map.hasLayer(bufferLayer)){
+   bufferLayer.addTo(map);
+  }
+
+ }else if(map.hasLayer(bufferLayer)){
+
+  map.removeLayer(bufferLayer);
+
+ }
+
+ if($("boundaryToggle").checked){
+
+  if(!map.hasLayer(boundaryLayer)){
+   boundaryLayer.addTo(map);
+  }
+
+ }else if(map.hasLayer(boundaryLayer)){
+
+  map.removeLayer(boundaryLayer);
+
+ }
+
+ $("mapCount").textContent=
+  visibleStops.length.toLocaleString()+" STOPS · "+
+  visibleRoutes.length.toLocaleString()+" ROUTE FEATURES";
+}
+
+/* ==========================================================
+   ANALYTICS
+========================================================== */
+
+function updateAnalytics(){
+
+ const visibleStops=stopFeatures.filter(featureInsideSelected);
+ const visibleRoutes=routeFeatures.filter(lineInsideSelected);
+
+ $("stopKpi").textContent=stopFeatures.length.toLocaleString();
+ $("routeKpi").textContent=routeFeatures.length.toLocaleString();
+
+ const categories={};
+
+ visibleStops.forEach(feature=>{
+  const category=feature.properties.category || "Other";
+  categories[category]=(categories[category] || 0)+1;
+ });
+
+ $("typeKpi").textContent=Object.keys(categories).length;
+ $("areaStops").textContent=visibleStops.length.toLocaleString();
+ $("areaRoutes").textContent=visibleRoutes.length.toLocaleString();
+
+ let density="—";
+
+ if(selectedFeature){
+
+  try{
+
+   const areaKm2=turf.area(selectedFeature)/1000000;
+
+   density=areaKm2>0
+    ? (visibleStops.length/areaKm2*100).toFixed(2)
+    : "—";
+
+  }catch(error){
+   density="—";
+  }
+
+ }else{
+
+  density="Upload/select area";
+
+ }
+
+ $("density").textContent=density;
+
+ drawChart(categories);
+}
+
+function drawChart(categories){
+
+ const labels=Object.keys(categories);
+ const values=labels.map(label=>categories[label]);
+
+ if(chartInstance){
+  chartInstance.destroy();
+ }
+
+ chartInstance=new Chart($("chart"),{
+
+  type:"bar",
+
+  data:{
+   labels:labels,
+   datasets:[{
+    label:"Mapped features",
+    data:values,
+    backgroundColor:"#42c5d8",
+    borderRadius:4,
+    maxBarThickness:32
+   }]
+  },
+
+  options:{
+   responsive:true,
+   maintainAspectRatio:false,
+
+   plugins:{
+    legend:{display:false}
+   },
+
+   scales:{
+    x:{
+     ticks:{
+      color:"#a9bdce",
+      font:{size:9}
+     },
+     grid:{display:false}
+    },
+
+    y:{
+     beginAtZero:true,
+     ticks:{
+      color:"#a9bdce",
+      precision:0,
+      font:{size:9}
+     },
+     grid:{color:"#293e52"}
+    }
+   }
+  }
+
+ });
+}
+
+/* ==========================================================
+   EXPORT FUNCTIONS
+========================================================== */
+
+function downloadFile(content,filename,type){
+
+ const blob=new Blob([content],{type:type});
+ const url=URL.createObjectURL(blob);
+ const anchor=document.createElement("a");
+
+ anchor.href=url;
+ anchor.download=filename;
+ anchor.click();
+
+ URL.revokeObjectURL(url);
+}
+
+function exportStops(){
+
+ if(!stopFeatures.length){
+  alert("Load national transport data first.");
+  return;
+ }
+
+ const rows=[
+  ["osm_id","name","category","longitude","latitude"]
+ ];
+
+ stopFeatures.forEach(feature=>{
+
+  rows.push([
+   feature.properties.osm_id,
+   feature.properties.name,
+   feature.properties.category,
+   feature.geometry.coordinates[0],
+   feature.geometry.coordinates[1]
+  ]);
+
+ });
+
+ const csv=rows.map(row=>
+  row.map(value=>
+   '"'+String(value ?? "").replace(/"/g,'""')+'"'
+  ).join(",")
+ ).join("\n");
+
+ downloadFile(
+  csv,
+  "Gambia_Transport_Stops.csv",
+  "text/csv;charset=utf-8"
+ );
+}
+
+function exportGeoJSON(){
+
+ if(!stopFeatures.length && !routeFeatures.length){
+  alert("Load national transport data first.");
+  return;
+ }
+
+ const collection={
+  type:"FeatureCollection",
+  features:[...stopFeatures,...routeFeatures]
+ };
+
+ downloadFile(
+  JSON.stringify(collection,null,2),
+  "Gambia_Transport_Features.geojson",
+  "application/geo+json"
+ );
+}
+
+/* ==========================================================
+   RESET
+========================================================== */
+
+function resetDashboard(){
+
+ $("stopsToggle").checked=true;
+ $("routesToggle").checked=true;
+ $("bufferToggle").checked=false;
+ $("boundaryToggle").checked=true;
+ $("basemap").value="street";
+ $("areaSelect").value="";
+ selectedFeature=null;
+
+ $("selectedName").textContent="National";
+
+ changeBasemap();
+
+ map.fitBounds(GAMBIA_BOUNDS);
+
+ refreshLayers();
+ updateAnalytics();
+}
+
+/* ==========================================================
+   START APPLICATION
+========================================================== */
+
+initMap();
+</script>
+
+</body>
+</html>
